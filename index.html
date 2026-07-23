@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>词汇闪卡练习</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Microsoft YaHei", sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  /* --- Start Screen --- */
+  #start-screen {
+    text-align: center;
+    animation: fadeIn .5s ease;
+  }
+  #start-screen h1 {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #start-screen p {
+    font-size: 1rem;
+    color: #aaa;
+    margin-bottom: 36px;
+    line-height: 1.8;
+  }
+  #start-btn {
+    padding: 14px 56px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    color: #fff;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 24px rgba(123,47,247,.4);
+  }
+  #start-btn:hover { transform: scale(1.05); box-shadow: 0 6px 32px rgba(123,47,247,.6); }
+  #start-btn:active { transform: scale(.97); }
+
+  /* --- Quiz Screen --- */
+  #quiz-screen {
+    display: none;
+    text-align: center;
+    width: 90%;
+    max-width: 760px;
+    animation: fadeIn .4s ease;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+    border-radius: 3px;
+    transition: width .4s ease;
+  }
+
+  .counter {
+    font-size: .9rem;
+    color: #888;
+    margin-bottom: 12px;
+  }
+
+  .word-card {
+    background: #16213e;
+    border-radius: 18px;
+    padding: 48px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all .3s ease;
+  }
+
+  .word-text {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .translation {
+    font-size: 1.3rem;
+    color: #ccc;
+    margin-top: 4px;
+  }
+
+  .example-section {
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all .4s ease;
+    max-height: 0;
+    overflow: hidden;
+  }
+  .example-section.show {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 400px;
+  }
+
+  .example-en {
+    font-size: 1.05rem;
+    color: #b0c4de;
+    line-height: 1.7;
+    margin-bottom: 10px;
+    padding: 14px 20px;
+    background: rgba(255,255,255,.04);
+    border-radius: 10px;
+    border-left: 3px solid #7b2ff7;
+  }
+  .example-en em {
+    color: #00d2ff;
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .example-zh {
+    font-size: .95rem;
+    color: #999;
+    line-height: 1.6;
+  }
+
+  .hint {
+    margin-top: 24px;
+    font-size: .85rem;
+    color: #666;
+    height: 24px;
+  }
+  .hint kbd {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    background: #333;
+    border: 1px solid #555;
+    font-family: monospace;
+    color: #ccc;
+    font-size: .85rem;
+  }
+
+  /* --- End Screen --- */
+  #end-screen {
+    display: none;
+    text-align: center;
+    animation: fadeIn .5s ease;
+  }
+  #end-screen h2 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #end-screen p { color: #aaa; margin-bottom: 28px; font-size: 1.05rem; }
+  #restart-btn {
+    padding: 12px 48px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    color: #fff;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  #restart-btn:hover { transform: scale(1.05); }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- Start Screen -->
+<div id="start-screen">
+  <h1>📖 词汇闪卡练习</h1>
+  <p>共 18 个词组，随机出题<br>
+     先试着说出意思，按 <kbd>空格</kbd> 看例句<br>
+     再按 <kbd>空格</kbd> 进入下一个</p>
+  <button id="start-btn" onclick="startQuiz()">开始练习</button>
+</div>
+
+<!-- Quiz Screen -->
+<div id="quiz-screen">
+  <div class="progress-bar"><div class="fill" id="progress-fill"></div></div>
+  <div class="counter" id="counter"></div>
+  <div class="word-card" id="word-card">
+    <div class="word-text" id="word-text"></div>
+    <div class="translation" id="translation"></div>
+    <div class="example-section" id="example-section">
+      <div class="example-en" id="example-en"></div>
+      <div class="example-zh" id="example-zh"></div>
+    </div>
+  </div>
+  <div class="hint" id="hint"></div>
+</div>
+
+<!-- End Screen -->
+<div id="end-screen">
+  <h2>🎉 全部完成！</h2>
+  <p>18 个词组已练习完毕</p>
+  <button id="restart-btn" onclick="restartQuiz()">再来一轮</button>
+</div>
+
+<script>
+var cards = [
+  {
+    word: "record-setting",
+    translation: "创纪录的",
+    exampleEn: "Analysis of the Pascal A nuclear test and its <em>record-setting</em> steel plate.",
+    exampleZh: "帕斯卡A核试验及其创纪录的钢板分析。"
+  },
+  {
+    word: "catastrophically",
+    translation: "灾难性地",
+    exampleEn: "The 1956 Pascal A nuclear test failed <em>catastrophically</em> due to a yield calculation error.",
+    exampleZh: "1956年帕斯卡A核试验因当量计算错误而灾难性地失败了。"
+  },
+  {
+    word: "yield calculation error",
+    translation: "当量计算错误",
+    exampleEn: "…failed catastrophically due to a <em>yield calculation error</em>.",
+    exampleZh: "……因当量计算错误而灾难性地失败了。"
+  },
+  {
+    word: "interstellar space",
+    translation: "星际空间",
+    exampleEn: "The plate could theoretically travel into <em>interstellar space</em>.",
+    exampleZh: "该钢板理论上可以飞入星际空间。"
+  },
+  {
+    word: "Test Setup & Objective",
+    translation: "试验设置与目标",
+    exampleEn: "<em>Test Setup & Objective</em>: The scientists dug a 150m deep, 1.2m diameter test shaft.",
+    exampleZh: "试验设置与目标：科学家挖掘了一口150米深、直径1.2米的试验井。"
+  },
+  {
+    word: "Projectile",
+    translation: "抛射物；发射物",
+    exampleEn: "The High-Speed <em>Projectile</em> — referring to the 900kg steel plate cover.",
+    exampleZh: "高速抛射物——指的是900公斤的钢板盖。"
+  },
+  {
+    word: "Planned yield",
+    translation: "计划当量",
+    exampleEn: "<em>Planned yield</em> was equivalent to 6kg of TNT.",
+    exampleZh: "计划当量相当于6公斤TNT。"
+  },
+  {
+    word: "threshold",
+    translation: "阈值；临界值",
+    exampleEn: "The plate's speed far exceeded this <em>threshold</em>.",
+    exampleZh: "钢板的速度远远超过了这个阈值（太阳系逃逸速度16.7km/s）。"
+  },
+  {
+    word: "intercontinental missiles",
+    translation: "洲际导弹",
+    exampleEn: "Faster than rockets or <em>intercontinental missiles</em>.",
+    exampleZh: "比火箭或洲际导弹还要快。"
+  },
+  {
+    word: "Record-setting speed, >194 Mach",
+    translation: "创纪录的速度，超过194马赫",
+    exampleEn: "Significance: <em>Record-setting speed, >194 Mach</em>.",
+    exampleZh: "意义：创纪录的速度，超过194马赫。"
+  },
+  {
+    word: "macroscopic object",
+    translation: "宏观物体",
+    exampleEn: "The fastest man-made <em>macroscopic object</em> in recorded human history.",
+    exampleZh: "人类有记录以来最快的自制宏观物体。"
+  },
+  {
+    word: "trigger a controlled",
+    translation: "引发一次可控的…",
+    exampleEn: "Planned to <em>trigger a controlled</em> underground nuclear explosion.",
+    exampleZh: "计划引发一次可控的地下核爆炸。"
+  },
+  {
+    word: "pre-set planned yield",
+    translation: "预先设定的计划当量",
+    exampleEn: "50,000 times the <em>pre-set planned yield</em> for the test.",
+    exampleZh: "是试验预先设定的计划当量的5万倍。"
+  },
+  {
+    word: "Shaft Transformation",
+    translation: "竖井蜕变/转化",
+    exampleEn: "<em>Shaft Transformation</em>: The massive energy instantly vaporized internal concrete structures.",
+    exampleZh: "竖井蜕变：巨大的能量瞬间汽化了内部混凝土结构，把试验井变成了巨型发射炮筒。"
+  },
+  {
+    word: "ejected",
+    translation: "被弹射出的",
+    exampleEn: "The high-speed camera only captured the <em>ejected</em> steel cover in a single frame.",
+    exampleZh: "高速相机仅在一帧画面中捕捉到了被弹射出的钢盖。"
+  },
+  {
+    word: "footage",
+    translation: "影像；录像片段",
+    exampleEn: "No continuous tracking <em>footage</em> available for reference.",
+    exampleZh: "没有连续的跟踪影像可供参考。"
+  },
+  {
+    word: "opening hook",
+    translation: "开场钩子；开场引子",
+    exampleEn: "It serves as the <em>opening hook</em> that frames the core topic of the entire sharing session.",
+    exampleZh: "它充当了整个分享会的开场钩子，引出了核心话题。"
+  },
+  {
+    word: "the core empirical data",
+    translation: "核心实测数据",
+    exampleEn: "It provides <em>the core empirical data</em> that supports the claim of the object being a speed record holder.",
+    exampleZh: "它提供了支持该物体成为速度纪录保持者的核心实测数据。"
+  }
+];
+
+var queue = [];
+var currentIndex = 0;
+var showingExample = false;
+var total = cards.length;
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function startQuiz() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('end-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  queue = shuffle(cards);
+  currentIndex = 0;
+  showWord();
+}
+
+function restartQuiz() {
+  startQuiz();
+}
+
+function showWord() {
+  if (currentIndex >= total) {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('end-screen').style.display = 'block';
+    return;
+  }
+  showingExample = false;
+  var c = queue[currentIndex];
+  document.getElementById('word-text').textContent = c.word;
+  document.getElementById('translation').textContent = c.translation;
+  document.getElementById('example-en').innerHTML = c.exampleEn;
+  document.getElementById('example-zh').textContent = c.exampleZh;
+  document.getElementById('example-section').classList.remove('show');
+  document.getElementById('counter').textContent = (currentIndex + 1) + ' / ' + total;
+  document.getElementById('progress-fill').style.width = ((currentIndex) / total * 100) + '%';
+  document.getElementById('hint').innerHTML = '试着说出意思，然后按 <kbd>空格</kbd> 查看例句';
+  // Animate card
+  var card = document.getElementById('word-card');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'fadeIn .35s ease';
+}
+
+function showExample() {
+  document.getElementById('example-section').classList.add('show');
+  document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 进入下一个';
+}
+
+function nextWord() {
+  currentIndex++;
+  showWord();
+}
+
+// Keyboard handler
+document.addEventListener('keydown', function(e) {
+  if (e.code === 'Space' || e.key === ' ') {
+    e.preventDefault();
+    if (document.getElementById('quiz-screen').style.display !== 'block') return;
+    if (!showingExample) {
+      showingExample = true;
+      showExample();
+    } else {
+      nextWord();
+    }
+  }
+});
+
+// Support tap anywhere on mobile
+document.addEventListener('click', function(e) {
+  // Don't trigger when clicking buttons
+  if (e.target.tagName === 'BUTTON') return;
+  if (document.getElementById('quiz-screen').style.display !== 'block') return;
+  if (!showingExample) {
+    showingExample = true;
+    showExample();
+  } else {
+    nextWord();
+  }
+});
+</script>
+</body>
+</html>
