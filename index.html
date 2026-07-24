@@ -416,8 +416,44 @@ var cards = [
 
 var queue = [];
 var currentIndex = 0;
-var showingExample = false;
+var stage = 0; // 0: 显示单词, 1: 已朗读单词, 2: 显示例句, 3: 已朗读例句
 var total = cards.length;
+
+// 朗读函数
+function speak(text, times, callback) {
+  if (!('speechSynthesis' in window)) {
+    if (callback) callback();
+    return;
+  }
+  
+  // 清除之前的朗读
+  window.speechSynthesis.cancel();
+  
+  // 去除 HTML 标签
+  var cleanText = text.replace(/<[^>]*>/g, '');
+  
+  var count = 0;
+  function speakOnce() {
+    if (count >= times) {
+      if (callback) callback();
+      return;
+    }
+    var utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.onend = function() {
+      count++;
+      if (count < times) {
+        setTimeout(speakOnce, 500); // 两次之间停顿 0.5 秒
+      } else {
+        if (callback) callback();
+      }
+    };
+    window.speechSynthesis.speak(utterance);
+  }
+  speakOnce();
+}
 
 function shuffle(arr) {
   var a = arr.slice();
@@ -434,6 +470,7 @@ function startQuiz() {
   document.getElementById('quiz-screen').style.display = 'block';
   queue = shuffle(cards);
   currentIndex = 0;
+  stage = 0;
   showWord();
 }
 
@@ -443,11 +480,12 @@ function restartQuiz() {
 
 function showWord() {
   if (currentIndex >= total) {
+    window.speechSynthesis.cancel();
     document.getElementById('quiz-screen').style.display = 'none';
     document.getElementById('end-screen').style.display = 'block';
     return;
   }
-  showingExample = false;
+  stage = 0;
   var c = queue[currentIndex];
   document.getElementById('word-text').textContent = c.word;
   document.getElementById('translation').textContent = c.translation;
@@ -456,7 +494,7 @@ function showWord() {
   document.getElementById('example-section').classList.remove('show');
   document.getElementById('counter').textContent = (currentIndex + 1) + ' / ' + total;
   document.getElementById('progress-fill').style.width = ((currentIndex) / total * 100) + '%';
-  document.getElementById('hint').innerHTML = '试着说出意思，然后按 <kbd>空格</kbd> 查看例句';
+  document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 或点击屏幕朗读单词';
   // Animate card
   var card = document.getElementById('word-card');
   card.style.animation = 'none';
@@ -466,25 +504,51 @@ function showWord() {
 
 function showExample() {
   document.getElementById('example-section').classList.add('show');
-  document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 进入下一个';
+  document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 或点击屏幕朗读例句';
 }
 
 function nextWord() {
   currentIndex++;
+  stage = 0;
   showWord();
+}
+
+function handleAdvance() {
+  if (document.getElementById('quiz-screen').style.display !== 'block') return;
+  
+  if (stage === 0) {
+    // 朗读单词两遍
+    var word = queue[currentIndex].word;
+    speak(word, 2, function() {
+      stage = 1;
+      document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 或点击屏幕查看例句';
+    });
+    stage = 1; // 立即设为 1，防止重复触发
+    document.getElementById('hint').innerHTML = '正在朗读...';
+  } else if (stage === 1) {
+    // 显示例句
+    showExample();
+    stage = 2;
+  } else if (stage === 2) {
+    // 朗读例句
+    var exampleEn = queue[currentIndex].exampleEn;
+    speak(exampleEn, 1, function() {
+      stage = 3;
+      document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 或点击屏幕进入下一个';
+    });
+    stage = 3; // 立即设为 3，防止重复触发
+    document.getElementById('hint').innerHTML = '正在朗读例句...';
+  } else if (stage === 3) {
+    // 下一个单词
+    nextWord();
+  }
 }
 
 // Keyboard handler
 document.addEventListener('keydown', function(e) {
   if (e.code === 'Space' || e.key === ' ') {
     e.preventDefault();
-    if (document.getElementById('quiz-screen').style.display !== 'block') return;
-    if (!showingExample) {
-      showingExample = true;
-      showExample();
-    } else {
-      nextWord();
-    }
+    handleAdvance();
   }
 });
 
@@ -492,14 +556,9 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('click', function(e) {
   // Don't trigger when clicking buttons
   if (e.target.tagName === 'BUTTON') return;
-  if (document.getElementById('quiz-screen').style.display !== 'block') return;
-  if (!showingExample) {
-    showingExample = true;
-    showExample();
-  } else {
-    nextWord();
-  }
+  handleAdvance();
 });
+
 </script>
 </body>
 </html>
