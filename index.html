@@ -77,7 +77,48 @@
   .counter {
     font-size: .9rem;
     color: #888;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+  }
+  .jump-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .jump-section label {
+    font-size: .85rem;
+    color: #aaa;
+  }
+  .jump-input {
+    width: 60px;
+    padding: 6px 10px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background: #1a1a2e;
+    color: #eee;
+    text-align: center;
+  }
+  .jump-input:focus {
+    outline: none;
+    border-color: #7b2ff7;
+  }
+  .jump-btn {
+    padding: 6px 14px;
+    font-size: .85rem;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    color: #fff;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .jump-btn:hover {
+    transform: scale(1.05);
+  }
+  .jump-btn:active {
+    transform: scale(.95);
   }
 
   .word-card {
@@ -206,6 +247,11 @@
 <div id="quiz-screen">
   <div class="progress-bar"><div class="fill" id="progress-fill"></div></div>
   <div class="counter" id="counter"></div>
+  <div class="jump-section">
+    <label>跳转到：</label>
+    <input type="number" class="jump-input" id="jump-input" min="1" placeholder="#">
+    <button class="jump-btn" onclick="jumpToWord()">跳转</button>
+  </div>
   <div class="word-card" id="word-card">
     <div class="word-text" id="word-text"></div>
     <div class="translation" id="translation"></div>
@@ -546,6 +592,49 @@ function goToNextWord() {
   currentIndex++;
   displayWord();
 }
+
+// 跳转到指定单词
+function jumpToWord() {
+  var input = document.getElementById('jump-input');
+  var num = parseInt(input.value);
+  
+  if (isNaN(num) || num < 1 || num > total) {
+    alert('请输入 1 到 ' + total + ' 之间的数字');
+    input.value = '';
+    return;
+  }
+  
+  // 停止朗读
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  
+  // 跳转到指定位置（数组索引从0开始，所以减1）
+  currentIndex = num - 1;
+  state = 'show_word';
+  displayWord();
+  
+  // 清空输入框
+  input.value = '';
+}
+
+// 支持在输入框中按回车跳转
+document.addEventListener('DOMContentLoaded', function() {
+  var jumpInput = document.getElementById('jump-input');
+  if (jumpInput) {
+    jumpInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        jumpToWord();
+      }
+    });
+    
+    // 阻止输入框的点击事件冒泡，避免触发朗读
+    jumpInput.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  }
+});
 
 function handleUserAction() {
   // 检查是否在测验界面
