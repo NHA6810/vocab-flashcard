@@ -419,8 +419,9 @@ var currentIndex = 0;
 var state = 'show_word'; // 'show_word', 'read_word', 'show_example', 'read_example'
 var total = cards.length;
 
-// 语音朗读函数
-function speakEnglish(text, repeatTimes, onComplete) {
+// 语音朗读函数 - 支持每次不同的速度
+// speedArray: 数组，每个元素是该次朗读的速度，如 [0.75, 1.0] 表示第一遍0.75倍速，第二遍1.0倍速
+function speakEnglish(text, speedArray, onComplete) {
   // 检查浏览器支持
   if (!('speechSynthesis' in window)) {
     console.log('浏览器不支持语音合成');
@@ -434,24 +435,26 @@ function speakEnglish(text, repeatTimes, onComplete) {
   // 清除 HTML 标签
   var cleanText = text.replace(/<[^>]*>/g, '');
   
+  var totalTimes = speedArray.length;
   var spokenCount = 0;
   
   function speakOnce() {
-    if (spokenCount >= repeatTimes) {
+    if (spokenCount >= totalTimes) {
       if (onComplete) onComplete();
       return;
     }
     
+    var currentSpeed = speedArray[spokenCount];
     var utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = 'en-US';
-    utterance.rate = 0.85;
+    utterance.rate = currentSpeed;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
     
     utterance.onend = function() {
       spokenCount++;
-      console.log('朗读了第 ' + spokenCount + ' 遍');
-      if (spokenCount < repeatTimes) {
+      console.log('朗读了第 ' + spokenCount + ' 遍，速度: ' + currentSpeed);
+      if (spokenCount < totalTimes) {
         // 两次之间停顿
         setTimeout(speakOnce, 600);
       } else {
@@ -558,7 +561,7 @@ function handleUserAction() {
     state = 'read_word';
     updateHint();
     var word = queue[currentIndex].word;
-    speakEnglish(word, 2, function() {
+    speakEnglish(word, [1.0, 1.0], function() {
       // 朗读完成，显示例句
       showExampleSection();
     });
@@ -568,7 +571,7 @@ function handleUserAction() {
     state = 'read_example';
     updateHint();
     var exampleText = queue[currentIndex].exampleEn;
-    speakEnglish(exampleText, 1, function() {
+    speakEnglish(exampleText, [0.75, 1.0], function() {
       // 朗读完成，进入下一个
       setTimeout(function() {
         goToNextWord();
