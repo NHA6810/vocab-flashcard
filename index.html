@@ -416,42 +416,57 @@ var cards = [
 
 var queue = [];
 var currentIndex = 0;
-var stage = 0; // 0: 显示单词, 1: 已朗读单词, 2: 显示例句, 3: 已朗读例句
+var state = 'show_word'; // 'show_word', 'read_word', 'show_example', 'read_example'
 var total = cards.length;
 
-// 朗读函数
-function speak(text, times, callback) {
+// 语音朗读函数
+function speakEnglish(text, repeatTimes, onComplete) {
+  // 检查浏览器支持
   if (!('speechSynthesis' in window)) {
-    if (callback) callback();
+    console.log('浏览器不支持语音合成');
+    if (onComplete) onComplete();
     return;
   }
   
-  // 清除之前的朗读
+  // 停止之前的朗读
   window.speechSynthesis.cancel();
   
-  // 去除 HTML 标签
+  // 清除 HTML 标签
   var cleanText = text.replace(/<[^>]*>/g, '');
   
-  var count = 0;
+  var spokenCount = 0;
+  
   function speakOnce() {
-    if (count >= times) {
-      if (callback) callback();
+    if (spokenCount >= repeatTimes) {
+      if (onComplete) onComplete();
       return;
     }
+    
     var utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = 'en-US';
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
+    utterance.rate = 0.85;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
     utterance.onend = function() {
-      count++;
-      if (count < times) {
-        setTimeout(speakOnce, 500); // 两次之间停顿 0.5 秒
+      spokenCount++;
+      console.log('朗读了第 ' + spokenCount + ' 遍');
+      if (spokenCount < repeatTimes) {
+        // 两次之间停顿
+        setTimeout(speakOnce, 600);
       } else {
-        if (callback) callback();
+        if (onComplete) onComplete();
       }
     };
+    
+    utterance.onerror = function(event) {
+      console.error('朗读错误:', event);
+      if (onComplete) onComplete();
+    };
+    
     window.speechSynthesis.speak(utterance);
   }
+  
   speakOnce();
 }
 
@@ -470,93 +485,117 @@ function startQuiz() {
   document.getElementById('quiz-screen').style.display = 'block';
   queue = shuffle(cards);
   currentIndex = 0;
-  stage = 0;
-  showWord();
+  state = 'show_word';
+  displayWord();
 }
 
 function restartQuiz() {
   startQuiz();
 }
 
-function showWord() {
+function displayWord() {
   if (currentIndex >= total) {
     window.speechSynthesis.cancel();
     document.getElementById('quiz-screen').style.display = 'none';
     document.getElementById('end-screen').style.display = 'block';
     return;
   }
-  stage = 0;
-  var c = queue[currentIndex];
-  document.getElementById('word-text').textContent = c.word;
-  document.getElementById('translation').textContent = c.translation;
-  document.getElementById('example-en').innerHTML = c.exampleEn;
-  document.getElementById('example-zh').textContent = c.exampleZh;
+  
+  state = 'show_word';
+  var card = queue[currentIndex];
+  
+  document.getElementById('word-text').textContent = card.word;
+  document.getElementById('translation').textContent = card.translation;
+  document.getElementById('example-en').innerHTML = card.exampleEn;
+  document.getElementById('example-zh').textContent = card.exampleZh;
   document.getElementById('example-section').classList.remove('show');
   document.getElementById('counter').textContent = (currentIndex + 1) + ' / ' + total;
   document.getElementById('progress-fill').style.width = ((currentIndex) / total * 100) + '%';
-  document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 或点击屏幕朗读单词';
-  // Animate card
-  var card = document.getElementById('word-card');
-  card.style.animation = 'none';
-  card.offsetHeight;
-  card.style.animation = 'fadeIn .35s ease';
-}
-
-function showExample() {
-  document.getElementById('example-section').classList.add('show');
-  document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 或点击屏幕朗读例句';
-}
-
-function nextWord() {
-  currentIndex++;
-  stage = 0;
-  showWord();
-}
-
-function handleAdvance() {
-  if (document.getElementById('quiz-screen').style.display !== 'block') return;
+  updateHint();
   
-  if (stage === 0) {
-    // 朗读单词两遍
-    var word = queue[currentIndex].word;
-    speak(word, 2, function() {
-      stage = 1;
-      document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 或点击屏幕查看例句';
-    });
-    stage = 1; // 立即设为 1，防止重复触发
-    document.getElementById('hint').innerHTML = '正在朗读...';
-  } else if (stage === 1) {
-    // 显示例句
-    showExample();
-    stage = 2;
-  } else if (stage === 2) {
-    // 朗读例句
-    var exampleEn = queue[currentIndex].exampleEn;
-    speak(exampleEn, 1, function() {
-      stage = 3;
-      document.getElementById('hint').innerHTML = '按 <kbd>空格</kbd> 或点击屏幕进入下一个';
-    });
-    stage = 3; // 立即设为 3，防止重复触发
-    document.getElementById('hint').innerHTML = '正在朗读例句...';
-  } else if (stage === 3) {
-    // 下一个单词
-    nextWord();
+  // 卡片动画
+  var wordCard = document.getElementById('word-card');
+  wordCard.style.animation = 'none';
+  wordCard.offsetHeight;
+  wordCard.style.animation = 'fadeIn .35s ease';
+}
+
+function updateHint() {
+  var hint = document.getElementById('hint');
+  if (state === 'show_word') {
+    hint.innerHTML = '🔊 按 <kbd>空格</kbd> 或点击屏幕朗读单词';
+  } else if (state === 'read_word') {
+    hint.innerHTML = '🔊 正在朗读...';
+  } else if (state === 'show_example') {
+    hint.innerHTML = '📖 按 <kbd>空格</kbd> 或点击屏幕朗读例句';
+  } else if (state === 'read_example') {
+    hint.innerHTML = '🔊 正在朗读例句...';
   }
 }
 
-// Keyboard handler
+function showExampleSection() {
+  document.getElementById('example-section').classList.add('show');
+  state = 'show_example';
+  updateHint();
+}
+
+function goToNextWord() {
+  currentIndex++;
+  displayWord();
+}
+
+function handleUserAction() {
+  // 检查是否在测验界面
+  var quizScreen = document.getElementById('quiz-screen');
+  if (quizScreen.style.display !== 'block') {
+    return;
+  }
+  
+  console.log('用户操作，当前状态:', state);
+  
+  if (state === 'show_word') {
+    // 状态1：显示单词 → 朗读单词两遍
+    state = 'read_word';
+    updateHint();
+    var word = queue[currentIndex].word;
+    speakEnglish(word, 2, function() {
+      // 朗读完成，显示例句
+      showExampleSection();
+    });
+    
+  } else if (state === 'show_example') {
+    // 状态3：显示例句 → 朗读例句
+    state = 'read_example';
+    updateHint();
+    var exampleText = queue[currentIndex].exampleEn;
+    speakEnglish(exampleText, 1, function() {
+      // 朗读完成，进入下一个
+      setTimeout(function() {
+        goToNextWord();
+      }, 800);
+    });
+    
+  } else if (state === 'read_word' || state === 'read_example') {
+    // 正在朗读中，忽略点击
+    console.log('正在朗读，忽略操作');
+  }
+}
+
+// 键盘事件
 document.addEventListener('keydown', function(e) {
   if (e.code === 'Space' || e.key === ' ') {
     e.preventDefault();
-    handleAdvance();
+    handleUserAction();
   }
 });
 
-// Support tap anywhere on mobile
+// 点击事件（支持手机触屏）
 document.addEventListener('click', function(e) {
-  // Don't trigger when clicking buttons
-  if (e.target.tagName === 'BUTTON') return;
-  handleAdvance();
+  // 不拦截按钮点击
+  if (e.target.tagName === 'BUTTON') {
+    return;
+  }
+  handleUserAction();
 });
 
 </script>
