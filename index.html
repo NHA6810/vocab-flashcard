@@ -237,7 +237,7 @@
 <!-- Start Screen -->
 <div id="start-screen">
   <h1>📖 词汇闪卡练习</h1>
-  <p>共 18 个词组，随机出题<br>
+  <p>共 <span id="total-count">0</span> 个词组，随机出题<br>
      先试着说出意思，按 <kbd>空格</kbd> 看例句<br>
      再按 <kbd>空格</kbd> 进入下一个</p>
   <button id="start-btn" onclick="startQuiz()">开始练习</button>
@@ -266,7 +266,7 @@
 <!-- End Screen -->
 <div id="end-screen">
   <h2>🎉 全部完成！</h2>
-  <p>18 个词组已练习完毕</p>
+  <p><span id="finished-count">0</span> 个词组已练习完毕</p>
   <button id="restart-btn" onclick="restartQuiz()">再来一轮</button>
 </div>
 
@@ -620,6 +620,10 @@ function jumpToWord() {
 
 // 支持在输入框中按回车跳转
 document.addEventListener('DOMContentLoaded', function() {
+  // 动态设置词组总数
+  var countSpans = document.querySelectorAll('#total-count, #finished-count');
+  countSpans.forEach(function(el) { el.textContent = cards.length; });
+  
   var jumpInput = document.getElementById('jump-input');
   if (jumpInput) {
     jumpInput.addEventListener('keydown', function(e) {
