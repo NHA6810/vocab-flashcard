@@ -18,8 +18,73 @@
     user-select: none;
   }
 
+  /* --- Folder Screen --- */
+  #folder-screen {
+    text-align: center;
+    animation: fadeIn .5s ease;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+  }
+  #folder-screen h1 {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #folder-screen p {
+    font-size: 1rem;
+    color: #aaa;
+    margin-bottom: 32px;
+  }
+  .folder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .folder-card {
+    background: #16213e;
+    border-radius: 16px;
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: all .25s ease;
+    border: 1px solid rgba(255,255,255,.06);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-align: left;
+    box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  }
+  .folder-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(123,47,247,.3);
+    border-color: rgba(123,47,247,.4);
+  }
+  .folder-card:active {
+    transform: scale(.97);
+  }
+  .folder-icon {
+    font-size: 2.8rem;
+    flex-shrink: 0;
+  }
+  .folder-info {
+    flex: 1;
+  }
+  .folder-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #eee;
+    margin-bottom: 4px;
+  }
+  .folder-count {
+    font-size: .9rem;
+    color: #888;
+  }
+
   /* --- Start Screen --- */
   #start-screen {
+    display: none;
     text-align: center;
     animation: fadeIn .5s ease;
   }
@@ -49,6 +114,22 @@
   }
   #start-btn:hover { transform: scale(1.05); box-shadow: 0 6px 32px rgba(123,47,247,.6); }
   #start-btn:active { transform: scale(.97); }
+  .back-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 8px 24px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 20px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .back-btn:hover {
+    border-color: #7b2ff7;
+    color: #eee;
+  }
 
   /* --- Quiz Screen --- */
   #quiz-screen {
@@ -228,19 +309,59 @@
     transition: transform .15s;
   }
   #restart-btn:hover { transform: scale(1.05); }
+  #folder-btn {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 24px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 20px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  #folder-btn:hover {
+    border-color: #7b2ff7;
+    color: #eee;
+  }
 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
 
+<!-- Folder Screen -->
+<div id="folder-screen">
+  <h1>📚 词汇闪卡练习</h1>
+  <p>请选择词组文件夹</p>
+  <div class="folder-list">
+    <div class="folder-card" onclick="selectFolder(0)">
+      <div class="folder-icon">📁</div>
+      <div class="folder-info">
+        <div class="folder-name">YouTube 生字和词组</div>
+        <div class="folder-count">31 个词组</div>
+      </div>
+    </div>
+    <div class="folder-card" onclick="selectFolder(1)">
+      <div class="folder-icon">📁</div>
+      <div class="folder-info">
+        <div class="folder-name">每日英语听力生词和词组</div>
+        <div class="folder-count">26 个词组</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Start Screen -->
 <div id="start-screen">
-  <h1>📖 词汇闪卡练习</h1>
+  <h1 id="folder-title">📖 词汇闪卡练习</h1>
   <p>共 <span id="total-count">0</span> 个词组，随机出题<br>
      先试着说出意思，按 <kbd>空格</kbd> 看例句<br>
      再按 <kbd>空格</kbd> 进入下一个</p>
   <button id="start-btn" onclick="startQuiz()">开始练习</button>
+  <br>
+  <button class="back-btn" onclick="goToFolderScreen()">← 返回选择文件夹</button>
 </div>
 
 <!-- Quiz Screen -->
@@ -268,217 +389,410 @@
   <h2>🎉 全部完成！</h2>
   <p><span id="finished-count">0</span> 个词组已练习完毕</p>
   <button id="restart-btn" onclick="restartQuiz()">再来一轮</button>
+  <br>
+  <button id="folder-btn" onclick="goToFolderScreen()">📁 切换文件夹</button>
 </div>
 
 <script>
-var cards = [
+var folders = [
   {
-    word: "record-setting",
-    translation: "创纪录的",
-    exampleEn: "Analysis of the Pascal A nuclear test and its <em>record-setting</em> steel plate.",
-    exampleZh: "帕斯卡A核试验及其创纪录的钢板分析。"
+    name: "YouTube 生字和词组",
+    cards: [
+    {
+      word: "record-setting",
+      translation: "创纪录的",
+      exampleEn: "Analysis of the Pascal A nuclear test and its <em>record-setting</em> steel plate.",
+      exampleZh: "帕斯卡A核试验及其创纪录的钢板分析。"
+    },
+    {
+      word: "catastrophically",
+      translation: "灾难性地",
+      exampleEn: "The 1956 Pascal A nuclear test failed <em>catastrophically</em> due to a yield calculation error.",
+      exampleZh: "1956年帕斯卡A核试验因当量计算错误而灾难性地失败了。"
+    },
+    {
+      word: "yield calculation error",
+      translation: "当量计算错误",
+      exampleEn: "…failed catastrophically due to a <em>yield calculation error</em>.",
+      exampleZh: "……因当量计算错误而灾难性地失败了。"
+    },
+    {
+      word: "interstellar space",
+      translation: "星际空间",
+      exampleEn: "The plate could theoretically travel into <em>interstellar space</em>.",
+      exampleZh: "该钢板理论上可以飞入星际空间。"
+    },
+    {
+      word: "Test Setup & Objective",
+      translation: "试验设置与目标",
+      exampleEn: "<em>Test Setup & Objective</em>: The scientists dug a 150m deep, 1.2m diameter test shaft.",
+      exampleZh: "试验设置与目标：科学家挖掘了一口150米深、直径1.2米的试验井。"
+    },
+    {
+      word: "Projectile",
+      translation: "抛射物；发射物",
+      exampleEn: "The High-Speed <em>Projectile</em> — referring to the 900kg steel plate cover.",
+      exampleZh: "高速抛射物——指的是900公斤的钢板盖。"
+    },
+    {
+      word: "Planned yield",
+      translation: "计划当量",
+      exampleEn: "<em>Planned yield</em> was equivalent to 6kg of TNT.",
+      exampleZh: "计划当量相当于6公斤TNT。"
+    },
+    {
+      word: "threshold",
+      translation: "阈值；临界值",
+      exampleEn: "The plate's speed far exceeded this <em>threshold</em>.",
+      exampleZh: "钢板的速度远远超过了这个阈值（太阳系逃逸速度16.7km/s）。"
+    },
+    {
+      word: "intercontinental missiles",
+      translation: "洲际导弹",
+      exampleEn: "Faster than rockets or <em>intercontinental missiles</em>.",
+      exampleZh: "比火箭或洲际导弹还要快。"
+    },
+    {
+      word: "Record-setting speed, >194 Mach",
+      translation: "创纪录的速度，超过194马赫",
+      exampleEn: "Significance: <em>Record-setting speed, >194 Mach</em>.",
+      exampleZh: "意义：创纪录的速度，超过194马赫。"
+    },
+    {
+      word: "macroscopic object",
+      translation: "宏观物体",
+      exampleEn: "The fastest man-made <em>macroscopic object</em> in recorded human history.",
+      exampleZh: "人类有记录以来最快的自制宏观物体。"
+    },
+    {
+      word: "trigger a controlled",
+      translation: "引发一次可控的…",
+      exampleEn: "Planned to <em>trigger a controlled</em> underground nuclear explosion.",
+      exampleZh: "计划引发一次可控的地下核爆炸。"
+    },
+    {
+      word: "pre-set planned yield",
+      translation: "预先设定的计划当量",
+      exampleEn: "50,000 times the <em>pre-set planned yield</em> for the test.",
+      exampleZh: "是试验预先设定的计划当量的5万倍。"
+    },
+    {
+      word: "Shaft Transformation",
+      translation: "竖井蜕变/转化",
+      exampleEn: "<em>Shaft Transformation</em>: The massive energy instantly vaporized internal concrete structures.",
+      exampleZh: "竖井蜕变：巨大的能量瞬间汽化了内部混凝土结构，把试验井变成了巨型发射炮筒。"
+    },
+    {
+      word: "ejected",
+      translation: "被弹射出的",
+      exampleEn: "The high-speed camera only captured the <em>ejected</em> steel cover in a single frame.",
+      exampleZh: "高速相机仅在一帧画面中捕捉到了被弹射出的钢盖。"
+    },
+    {
+      word: "footage",
+      translation: "影像；录像片段",
+      exampleEn: "No continuous tracking <em>footage</em> available for reference.",
+      exampleZh: "没有连续的跟踪影像可供参考。"
+    },
+    {
+      word: "opening hook",
+      translation: "开场钩子；开场引子",
+      exampleEn: "It serves as the <em>opening hook</em> that frames the core topic of the entire sharing session.",
+      exampleZh: "它充当了整个分享会的开场钩子，引出了核心话题。"
+    },
+    {
+      word: "the core empirical data",
+      translation: "核心实测数据",
+      exampleEn: "It provides <em>the core empirical data</em> that supports the claim of the object being a speed record holder.",
+      exampleZh: "它提供了支持该物体成为速度纪录保持者的核心实测数据。"
+    },
+    {
+      word: "Core Technical Parameters",
+      translation: "核心技术参数",
+      exampleEn: "<em>Core Technical Parameters</em>",
+      exampleZh: "核心技术参数"
+    },
+    {
+      word: "Active Balancing System",
+      translation: "主动平衡系统",
+      exampleEn: "<em>Active Balancing System</em> ▪Hardware & Algorithm: Equipped with a steel reaction wheel running on a 200 Hz PID loop with dynamic balance point adjustment, all powered by an STM32 microcontroller. ▪Anti-Toppling Performance: Delivers fast, stable recovery from any lateral external force applied to the vehicle, eliminating the inherent toppling risk of traditional two-wheeled structures.",
+      exampleZh: "主动平衡系统"
+    },
+    {
+      word: "Autonomous Driving Module",
+      translation: "自动驾驶模块",
+      exampleEn: "<em>Autonomous Driving Module</em>: Adopts a stereo depth camera and lidar sensor to collect surrounding environment data, supporting the vehicle's stable autonomous driving operation logic.",
+      exampleZh: "自动驾驶模块"
+    },
+    {
+      word: "Project Positioning & Resource Disclosure",
+      translation: "项目定位与资源公开",
+      exampleEn: "<em>Project Positioning & Resource Disclosure</em>",
+      exampleZh: "项目定位与资源公开"
+    },
+    {
+      word: "Core Application Direction",
+      translation: "核心应用方向",
+      exampleEn: "<em>Core Application Direction</em> ▪Research Foundation Role: Serves as a dedicated foundational platform to lower the threshold for relevant teams to carry out autonomous two-wheeled vehicle research. ▪Long-Term Commercial Prospect: The team notes the technology can be further optimized to act as a high-efficiency solution for urban logistics and delivery scenarios.",
+      exampleZh: "核心应用方向"
+    },
+    {
+      word: "Open Source Resource Release",
+      translation: "开源资源发布",
+      exampleEn: "<em>Open Source Resource Release</em>: All core development resources including 3D CAD models, full source code and complete component lists are released for free public access.",
+      exampleZh: "开源资源发布"
+    },
+    {
+      word: "Project Initiation Background",
+      translation: "项目启动背景",
+      exampleEn: "<em>Project Initiation Background</em>",
+      exampleZh: "项目启动背景"
+    },
+    {
+      word: "Program Setting",
+      translation: "项目设定",
+      exampleEn: "<em>Program Setting</em>: The project was launched as a fully self-defined independent research program, with no predefined scope boundaries set for the entire development process.",
+      exampleZh: "项目设定"
+    },
+    {
+      word: "Supervision Support",
+      translation: "指导支持",
+      exampleEn: "<em>Supervision Support</em>: The independent research program is carried out under the guidance of instructor Victoria Preston from Owen College.",
+      exampleZh: "指导支持"
+    },
+    {
+      word: "Project Introduction",
+      translation: "项目介绍",
+      exampleEn: "<em>Project Introduction</em>: The presenters introduced the self-developed autonomous self-balancing bicycle project they completed as Owen freshmen.",
+      exampleZh: "项目介绍"
+    },
+    {
+      word: "Technical Implementation",
+      translation: "技术实现",
+      exampleEn: "<em>Technical Implementation</em>: The bicycle uses a steel reaction wheel with a 200 Hz PID loop running on STM32 for active balancing, and adopts a stereo depth camera and lidar sensor for autonomous driving.",
+      exampleZh: "技术实现"
+    },
+    {
+      word: "Project Attributes",
+      translation: "项目属性",
+      exampleEn: "<em>Project Attributes</em>: The project is designed as an open-source platform, with all relevant files including 3D CAD models, code and material lists publicly available online, originally initiated as an independent study research project.",
+      exampleZh: "项目属性"
+    },
+    {
+      word: "Application Prospect",
+      translation: "应用前景",
+      exampleEn: "<em>Application Prospect</em>: The project is positioned as a foundational research platform for autonomous two-wheeled vehicles, and can be applied to more efficient delivery scenarios in the future.",
+      exampleZh: "应用前景"
+    }
+    ]
   },
   {
-    word: "catastrophically",
-    translation: "灾难性地",
-    exampleEn: "The 1956 Pascal A nuclear test failed <em>catastrophically</em> due to a yield calculation error.",
-    exampleZh: "1956年帕斯卡A核试验因当量计算错误而灾难性地失败了。"
-  },
-  {
-    word: "yield calculation error",
-    translation: "当量计算错误",
-    exampleEn: "…failed catastrophically due to a <em>yield calculation error</em>.",
-    exampleZh: "……因当量计算错误而灾难性地失败了。"
-  },
-  {
-    word: "interstellar space",
-    translation: "星际空间",
-    exampleEn: "The plate could theoretically travel into <em>interstellar space</em>.",
-    exampleZh: "该钢板理论上可以飞入星际空间。"
-  },
-  {
-    word: "Test Setup & Objective",
-    translation: "试验设置与目标",
-    exampleEn: "<em>Test Setup & Objective</em>: The scientists dug a 150m deep, 1.2m diameter test shaft.",
-    exampleZh: "试验设置与目标：科学家挖掘了一口150米深、直径1.2米的试验井。"
-  },
-  {
-    word: "Projectile",
-    translation: "抛射物；发射物",
-    exampleEn: "The High-Speed <em>Projectile</em> — referring to the 900kg steel plate cover.",
-    exampleZh: "高速抛射物——指的是900公斤的钢板盖。"
-  },
-  {
-    word: "Planned yield",
-    translation: "计划当量",
-    exampleEn: "<em>Planned yield</em> was equivalent to 6kg of TNT.",
-    exampleZh: "计划当量相当于6公斤TNT。"
-  },
-  {
-    word: "threshold",
-    translation: "阈值；临界值",
-    exampleEn: "The plate's speed far exceeded this <em>threshold</em>.",
-    exampleZh: "钢板的速度远远超过了这个阈值（太阳系逃逸速度16.7km/s）。"
-  },
-  {
-    word: "intercontinental missiles",
-    translation: "洲际导弹",
-    exampleEn: "Faster than rockets or <em>intercontinental missiles</em>.",
-    exampleZh: "比火箭或洲际导弹还要快。"
-  },
-  {
-    word: "Record-setting speed, >194 Mach",
-    translation: "创纪录的速度，超过194马赫",
-    exampleEn: "Significance: <em>Record-setting speed, >194 Mach</em>.",
-    exampleZh: "意义：创纪录的速度，超过194马赫。"
-  },
-  {
-    word: "macroscopic object",
-    translation: "宏观物体",
-    exampleEn: "The fastest man-made <em>macroscopic object</em> in recorded human history.",
-    exampleZh: "人类有记录以来最快的自制宏观物体。"
-  },
-  {
-    word: "trigger a controlled",
-    translation: "引发一次可控的…",
-    exampleEn: "Planned to <em>trigger a controlled</em> underground nuclear explosion.",
-    exampleZh: "计划引发一次可控的地下核爆炸。"
-  },
-  {
-    word: "pre-set planned yield",
-    translation: "预先设定的计划当量",
-    exampleEn: "50,000 times the <em>pre-set planned yield</em> for the test.",
-    exampleZh: "是试验预先设定的计划当量的5万倍。"
-  },
-  {
-    word: "Shaft Transformation",
-    translation: "竖井蜕变/转化",
-    exampleEn: "<em>Shaft Transformation</em>: The massive energy instantly vaporized internal concrete structures.",
-    exampleZh: "竖井蜕变：巨大的能量瞬间汽化了内部混凝土结构，把试验井变成了巨型发射炮筒。"
-  },
-  {
-    word: "ejected",
-    translation: "被弹射出的",
-    exampleEn: "The high-speed camera only captured the <em>ejected</em> steel cover in a single frame.",
-    exampleZh: "高速相机仅在一帧画面中捕捉到了被弹射出的钢盖。"
-  },
-  {
-    word: "footage",
-    translation: "影像；录像片段",
-    exampleEn: "No continuous tracking <em>footage</em> available for reference.",
-    exampleZh: "没有连续的跟踪影像可供参考。"
-  },
-  {
-    word: "opening hook",
-    translation: "开场钩子；开场引子",
-    exampleEn: "It serves as the <em>opening hook</em> that frames the core topic of the entire sharing session.",
-    exampleZh: "它充当了整个分享会的开场钩子，引出了核心话题。"
-  },
-  {
-    word: "the core empirical data",
-    translation: "核心实测数据",
-    exampleEn: "It provides <em>the core empirical data</em> that supports the claim of the object being a speed record holder.",
-    exampleZh: "它提供了支持该物体成为速度纪录保持者的核心实测数据。"
-  }  ,{
-    word: "Core Technical Parameters",
-    translation: "核心技术参数",
-    exampleEn: "<em>Core Technical Parameters</em>",
-    exampleZh: "核心技术参数"
+    name: "每日英语听力生词和词组",
+    cards: [
+    {
+      word: "tap into",
+      translation: "利用，发掘，深入挖掘",
+      exampleEn: "My name\'s Jills, and I help women step into their power, <em>tap into</em> their divine feminine, and become their best self, live their best life.",
+      exampleZh: "My name\'s Jills, and I help women step into their power, tap into their divine feminine, and become their best self, live their best life."
+    },
+    {
+      word: "divine feminine",
+      translation: "神圣的女性特质",
+      exampleEn: "My name\'s Jills, and I help women step into their power, tap into their <em>divine feminine</em>, and become their best self, live their best life.",
+      exampleZh: "My name\'s Jills, and I help women step into their power, tap into their divine feminine, and become their best self, live their best life."
+    },
+    {
+      word: "stand by",
+      translation: "坚持，支持，信守",
+      exampleEn: "And I <em>stand by</em> this, is your insecurities.",
+      exampleZh: "And I stand by this, is your insecurities."
+    },
+    {
+      word: "insecurities",
+      translation: "不安全感，自卑",
+      exampleEn: "The 1st thing that I think every woman should keep private. And I stand by this, is your <em>insecurities</em>.",
+      exampleZh: "The 1st thing that I think every woman should keep private. And I stand by this, is your insecurities."
+    },
+    {
+      word: "self-conscious about",
+      translation: "对…感到不安/在意",
+      exampleEn: "Everyone has things that they are <em>self-conscious about</em> or feel like they\'re not good at or wish something about them would change.",
+      exampleZh: "Everyone has things that they are self-conscious about or feel like they\'re not good at or wish something about them would change."
+    },
+    {
+      word: "identity",
+      translation: "身份，认同感",
+      exampleEn: "You have unconsciously, given them instructions on what to associate with you and your <em>identity</em>, right?",
+      exampleZh: "You have unconsciously, given them instructions on what to associate with you and your identity, right?"
+    },
+    {
+      word: "crooked",
+      translation: "歪斜的，不整齐的",
+      exampleEn: "Like, if you\'re insecure that you think you have a big forehead or you\'re insecure that your teeth are <em>crooked</em> or you have a weird smile.",
+      exampleZh: "Like, if you\'re insecure that you think you have a big forehead or you\'re insecure that your teeth are crooked or you have a weird smile."
+    },
+    {
+      word: "better off",
+      translation: "处境更好，更幸福",
+      exampleEn: "And we are always <em>better off</em>. We are more likely to be successful and just happier and better off.",
+      exampleZh: "And we are always better off. We are more likely to be successful and just happier and better off."
+    },
+    {
+      word: "worse off",
+      translation: "处境更糟",
+      exampleEn: "You are making them associate you with that label, which they\'ve probably never done before, which just makes you <em>worse off</em>.",
+      exampleZh: "You are making them associate you with that label, which they\'ve probably never done before, which just makes you worse off."
+    },
+    {
+      word: "solidify",
+      translation: "巩固，使固化",
+      exampleEn: "And the more you repeat those insecurities to yourself or to others over and over again, the more you <em>solidify</em> that into your identity.",
+      exampleZh: "And the more you repeat those insecurities to yourself or to others over and over again, the more you solidify that into your identity."
+    },
+    {
+      word: "terrible with",
+      translation: "很不擅长（某事）",
+      exampleEn: "So if every week I\'m saying, I\'m so <em>terrible with</em> money.",
+      exampleZh: "So if every week I\'m saying, I\'m so terrible with money."
+    },
+    {
+      word: "sabotaging",
+      translation: "暗中破坏，自我毁灭",
+      exampleEn: "I\'m always <em>sabotaging</em> my relationships.",
+      exampleZh: "I\'m always sabotaging my relationships."
+    },
+    {
+      word: "be discerning about",
+      translation: "对…审慎选择/有辨别力",
+      exampleEn: "So <em>be discerning about</em> which stories you choose to share out loud.",
+      exampleZh: "So be discerning about which stories you choose to share out loud."
+    },
+    {
+      word: "resurfacing",
+      translation: "重新浮现，再次出现",
+      exampleEn: "Old insecurities that keep <em>resurfacing</em> or trying to move past mental blocks.",
+      exampleZh: "Old insecurities that keep resurfacing or trying to move past mental blocks."
+    },
+    {
+      word: "past mental blocks",
+      translation: "克服心理障碍",
+      exampleEn: "Old insecurities that keep resurfacing or trying to move <em>past mental blocks</em>.",
+      exampleZh: "Old insecurities that keep resurfacing or trying to move past mental blocks."
+    },
+    {
+      word: "in your corner",
+      translation: "支持你，站在你这边",
+      exampleEn: "Having someone <em>in your corner</em> can make a huge difference.",
+      exampleZh: "Having someone in your corner can make a huge difference."
+    },
+    {
+      word: "outside perspective",
+      translation: "外部视角，旁观者角度",
+      exampleEn: "And sometimes just having an <em>outside perspective</em> can help you get out of your own head and see things in a new life.",
+      exampleZh: "And sometimes just having an outside perspective can help you get out of your own head and see things in a new life."
+    },
+    {
+      word: "commuting",
+      translation: "通勤，上下班路程",
+      exampleEn: "No waiting rooms, no <em>commuting</em>, just professional support from home on your own schedule.",
+      exampleZh: "No waiting rooms, no commuting, just professional support from home on your own schedule."
+    },
+    {
+      word: "nuptial",
+      translation: "婚姻的，婚礼的",
+      exampleEn: "Or maybe you\'re just in your <em>nuptial</em> phase. And so you\'re getting angry about the littlest things and you want to vent every single time to your friend.",
+      exampleZh: "Or maybe you\'re just in your nuptial phase. And so you\'re getting angry about the littlest things and you want to vent every single time to your friend."
+    },
+    {
+      word: "pick up the slack",
+      translation: "接手别人的工作，补上不足",
+      exampleEn: "You\'re not talking about that time when he really picked up the slack when you needed it.",
+      exampleZh: "You\'re not talking about that time when he really picked up the slack when you needed it."
+    },
+    {
+      word: "hiccups",
+      translation: "小挫折，小问题",
+      exampleEn: "Like everyone has some <em>hiccups</em> or makes mistakes or has weird moments here and there.",
+      exampleZh: "Like everyone has some hiccups or makes mistakes or has weird moments here and there."
+    },
+    {
+      word: "caveat",
+      translation: "注意事项，附带条件",
+      exampleEn: "But I have a very important <em>caveat</em> here that you need to hear.",
+      exampleZh: "But I have a very important caveat here that you need to hear."
+    },
+    {
+      word: "discernment",
+      translation: "辨别力，判断力",
+      exampleEn: "Okay, so most of the time, having privacy and <em>discernment</em> around your finances is a very good thing and is usually the move.",
+      exampleZh: "Okay, so most of the time, having privacy and discernment around your finances is a very good thing and is usually the move."
+    },
+    {
+      word: "portfolio",
+      translation: "投资组合，资产组合",
+      exampleEn: "Like, you don\'t need to share how much money you\'re making when you meet a new friend or about your investment <em>portfolio</em> or how many revenue streams you have.",
+      exampleZh: "Like, you don\'t need to share how much money you\'re making when you meet a new friend or about your investment portfolio or how many revenue streams you have."
+    },
+    {
+      word: "lowball",
+      translation: "故意压低（报价/估价）",
+      exampleEn: "Comparing real financial numbers with a woman who you know knows what they\'re talking about so you don\'t get <em>lowball</em>ed.",
+      exampleZh: "Comparing real financial numbers with a woman who you know knows what they\'re talking about so you don\'t get lowballed."
+    },
+    {
+      word: "mastermind",
+      translation: "智囊团，策划小组",
+      exampleEn: "For example, I just joined this women\'s only business <em>mastermind</em> thing this year, and I\'ve never done anything like that.",
+      exampleZh: "For example, I just joined this women\'s only business mastermind thing this year, and I\'ve never done anything like that."
+    }
+    ]
   }
-  ,{
-    word: "Active Balancing System",
-    translation: "主动平衡系统",
-    exampleEn: "<em>Active Balancing System</em> ▪Hardware & Algorithm: Equipped with a steel reaction wheel running on a 200 Hz PID loop with dynamic balance point adjustment, all powered by an STM32 microcontroller. ▪Anti-Toppling Performance: Delivers fast, stable recovery from any lateral external force applied to the vehicle, eliminating the inherent toppling risk of traditional two- wheeled structures.",
-    exampleZh: "主动平衡系统"
-  }
-  ,{
-    word: "Autonomous Driving Module",
-    translation: "自动驾驶模块",
-    exampleEn: "<em>Autonomous Driving Module</em>: Adopts a stereo depth camera and lidar sensor to collect surrounding environment data, supporting the vehicle’s stable autonomous driving operation logic.",
-    exampleZh: "自动驾驶模块"
-  }
-  ,{
-    word: "Project Positioning & Resource Disclosure",
-    translation: "项目定位与资源公开",
-    exampleEn: "<em>Project Positioning & Resource Disclosure</em>",
-    exampleZh: "项目定位与资源公开"
-  }
-  ,{
-    word: "Core Application Direction",
-    translation: "核心应用方向",
-    exampleEn: "<em>Core Application Direction</em> ▪Research Foundation Role: Serves as a dedicated foundational platform to lower the threshold for relevant teams to carry out autonomous two-wheeled vehicle research. ▪Long-Term Commercial Prospect: The team notes the technology can be further optimized to act as a high-efficiency solution for urban logistics and delivery scenarios.",
-    exampleZh: "核心应用方向"
-  }
-  ,{
-    word: "Open Source Resource Release",
-    translation: "开源资源发布",
-    exampleEn: "<em>Open Source Resource Release</em>: All core development resources including 3D CAD models, full source code and complete component lists are released for free public access.",
-    exampleZh: "开源资源发布"
-  }
-  ,{
-    word: "Project Initiation Background",
-    translation: "项目启动背景",
-    exampleEn: "<em>Project Initiation Background</em>",
-    exampleZh: "项目启动背景"
-  }
-  ,{
-    word: "Program Setting",
-    translation: "项目设定",
-    exampleEn: "<em>Program Setting</em>: The project was launched as a fully self-defined independent research program, with no predefined scope boundaries set for the entire development process.",
-    exampleZh: "项目设定"
-  }
-  ,{
-    word: "Supervision Support",
-    translation: "指导支持",
-    exampleEn: "<em>Supervision Support</em>: The independent research program is carried out under the guidance of instructor Victoria Preston from Owen College.",
-    exampleZh: "指导支持"
-  }
-  ,{
-    word: "Project Introduction",
-    translation: "项目介绍",
-    exampleEn: "<em>Project Introduction</em>: The presenters introduced the self-developed autonomous self- balancing bicycle project they completed as Owen freshmen.",
-    exampleZh: "项目介绍"
-  }
-  ,{
-    word: "Technical Implementation",
-    translation: "技术实现",
-    exampleEn: "<em>Technical Implementation</em>: The bicycle uses a steel reaction wheel with a 200 Hz PID loop running on STM32 for active balancing, and adopts a stereo depth camera and lidar sensor for autonomous driving.",
-    exampleZh: "技术实现"
-  }
-  ,{
-    word: "Project Attributes",
-    translation: "项目属性",
-    exampleEn: "<em>Project Attributes</em>: The project is designed as an open-source platform, with all relevant files including 3D CAD models, code and material lists publicly available online, originally initiated as an independent study research project.",
-    exampleZh: "项目属性"
-  }
-  ,{
-    word: "Application Prospect",
-    translation: "应用前景",
-    exampleEn: "<em>Application Prospect</em>: The project is positioned as a foundational research platform for autonomous two-wheeled vehicles, and can be applied to more efficient delivery scenarios in the future.",
-    exampleZh: "应用前景"
-  }
-
 ];
 
+var currentFolder = null;
+var cards = [];
 var queue = [];
 var currentIndex = 0;
-var state = 'show_word'; // 'show_word', 'read_word', 'show_example', 'read_example'
-var total = cards.length;
+var state = 'show_word';
+var total = 0;
 
-// 语音朗读函数 - 支持每次不同的速度
-// speedArray: 数组，每个元素是该次朗读的速度，如 [0.75, 1.0] 表示第一遍0.75倍速，第二遍1.0倍速
+// Folder selection
+function selectFolder(idx) {
+  currentFolder = idx;
+  cards = folders[idx].cards;
+  total = cards.length;
+  
+  // Update start screen
+  document.getElementById('folder-title').textContent = '📖 ' + folders[idx].name;
+  document.getElementById('total-count').textContent = total;
+  document.getElementById('finished-count').textContent = total;
+  
+  // Switch to start screen
+  document.getElementById('folder-screen').style.display = 'none';
+  document.getElementById('start-screen').style.display = 'block';
+}
+
+function goToFolderScreen() {
+  // Stop any ongoing speech
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('end-screen').style.display = 'none';
+  document.getElementById('folder-screen').style.display = 'block';
+}
+
+// 语音朗读函数
 function speakEnglish(text, speedArray, onComplete) {
-  // 检查浏览器支持
   if (!('speechSynthesis' in window)) {
     console.log('浏览器不支持语音合成');
     if (onComplete) onComplete();
     return;
   }
   
-  // 停止之前的朗读
   window.speechSynthesis.cancel();
   
-  // 清除 HTML 标签
   var cleanText = text.replace(/<[^>]*>/g, '');
   
   var totalTimes = speedArray.length;
@@ -501,7 +815,6 @@ function speakEnglish(text, speedArray, onComplete) {
       spokenCount++;
       console.log('朗读了第 ' + spokenCount + ' 遍，速度: ' + currentSpeed);
       if (spokenCount < totalTimes) {
-        // 两次之间停顿
         setTimeout(speakOnce, 600);
       } else {
         if (onComplete) onComplete();
@@ -562,7 +875,6 @@ function displayWord() {
   document.getElementById('progress-fill').style.width = ((currentIndex) / total * 100) + '%';
   updateHint();
   
-  // 卡片动画
   var wordCard = document.getElementById('word-card');
   wordCard.style.animation = 'none';
   wordCard.offsetHeight;
@@ -593,7 +905,6 @@ function goToNextWord() {
   displayWord();
 }
 
-// 跳转到指定单词
 function jumpToWord() {
   var input = document.getElementById('jump-input');
   var num = parseInt(input.value);
@@ -604,26 +915,18 @@ function jumpToWord() {
     return;
   }
   
-  // 停止朗读
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
   
-  // 跳转到指定位置（数组索引从0开始，所以减1）
   currentIndex = num - 1;
   state = 'show_word';
   displayWord();
   
-  // 清空输入框
   input.value = '';
 }
 
-// 支持在输入框中按回车跳转
 document.addEventListener('DOMContentLoaded', function() {
-  // 动态设置词组总数
-  var countSpans = document.querySelectorAll('#total-count, #finished-count');
-  countSpans.forEach(function(el) { el.textContent = cards.length; });
-  
   var jumpInput = document.getElementById('jump-input');
   if (jumpInput) {
     jumpInput.addEventListener('keydown', function(e) {
@@ -633,7 +936,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
     
-    // 阻止输入框的点击事件冒泡，避免触发朗读
     jumpInput.addEventListener('click', function(e) {
       e.stopPropagation();
     });
@@ -641,7 +943,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function handleUserAction() {
-  // 检查是否在测验界面
   var quizScreen = document.getElementById('quiz-screen');
   if (quizScreen.style.display !== 'block') {
     return;
@@ -650,34 +951,28 @@ function handleUserAction() {
   console.log('用户操作，当前状态:', state);
   
   if (state === 'show_word') {
-    // 状态1：显示单词 → 朗读单词两遍
     state = 'read_word';
     updateHint();
     var word = queue[currentIndex].word;
     speakEnglish(word, [1.0, 1.0], function() {
-      // 朗读完成，显示例句
       showExampleSection();
     });
     
   } else if (state === 'show_example') {
-    // 状态3：显示例句 → 朗读例句
     state = 'read_example';
     updateHint();
     var exampleText = queue[currentIndex].exampleEn;
     speakEnglish(exampleText, [0.75, 1.0], function() {
-      // 朗读完成，进入下一个
       setTimeout(function() {
         goToNextWord();
       }, 800);
     });
     
   } else if (state === 'read_word' || state === 'read_example') {
-    // 正在朗读中，忽略点击
     console.log('正在朗读，忽略操作');
   }
 }
 
-// 键盘事件
 document.addEventListener('keydown', function(e) {
   if (e.code === 'Space' || e.key === ' ') {
     e.preventDefault();
@@ -685,10 +980,12 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// 点击事件（支持手机触屏）
 document.addEventListener('click', function(e) {
-  // 不拦截按钮点击
   if (e.target.tagName === 'BUTTON') {
+    return;
+  }
+  // Don't trigger on folder cards, inputs, or other interactive elements
+  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn')) {
     return;
   }
   handleUserAction();
