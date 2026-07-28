@@ -366,6 +366,7 @@
 
 <!-- Quiz Screen -->
 <div id="quiz-screen">
+  <button class="back-btn" onclick="goToFolderScreen()" style="margin-bottom:8px;">← 返回首页</button>
   <div class="progress-bar"><div class="fill" id="progress-fill"></div></div>
   <div class="counter" id="counter"></div>
   <div class="jump-section">
@@ -390,7 +391,7 @@
   <p><span id="finished-count">0</span> 个词组已练习完毕</p>
   <button id="restart-btn" onclick="restartQuiz()">再来一轮</button>
   <br>
-  <button id="folder-btn" onclick="goToFolderScreen()">📁 切换文件夹</button>
+  <button id="folder-btn" onclick="goToFolderScreen()">← 返回首页选择文件夹</button>
 </div>
 
 <script>
@@ -593,157 +594,157 @@ var folders = [
       word: "tap into",
       translation: "利用，发掘，深入挖掘",
       exampleEn: "My name\'s Jills, and I help women step into their power, <em>tap into</em> their divine feminine, and become their best self, live their best life.",
-      exampleZh: "My name\'s Jills, and I help women step into their power, tap into their divine feminine, and become their best self, live their best life."
+      exampleZh: "我叫Jills，我帮助女性释放她们的力量，发掘她们内在的神圣女性特质，成为最好的自己，过上最好的生活。"
     },
     {
       word: "divine feminine",
       translation: "神圣的女性特质",
       exampleEn: "My name\'s Jills, and I help women step into their power, tap into their <em>divine feminine</em>, and become their best self, live their best life.",
-      exampleZh: "My name\'s Jills, and I help women step into their power, tap into their divine feminine, and become their best self, live their best life."
+      exampleZh: "我叫Jills，我帮助女性释放她们的力量，发掘她们内在的神圣女性特质，成为最好的自己，过上最好的生活。"
     },
     {
       word: "stand by",
       translation: "坚持，支持，信守",
       exampleEn: "And I <em>stand by</em> this, is your insecurities.",
-      exampleZh: "And I stand by this, is your insecurities."
+      exampleZh: "而我坚持这一点，就是你的不安全感。"
     },
     {
       word: "insecurities",
       translation: "不安全感，自卑",
       exampleEn: "The 1st thing that I think every woman should keep private. And I stand by this, is your <em>insecurities</em>.",
-      exampleZh: "The 1st thing that I think every woman should keep private. And I stand by this, is your insecurities."
+      exampleZh: "我认为每个女人都应该保守的第一件事。而我坚持这一点，就是你的不安全感。"
     },
     {
       word: "self-conscious about",
       translation: "对…感到不安/在意",
       exampleEn: "Everyone has things that they are <em>self-conscious about</em> or feel like they\'re not good at or wish something about them would change.",
-      exampleZh: "Everyone has things that they are self-conscious about or feel like they\'re not good at or wish something about them would change."
+      exampleZh: "每个人都有让自己感到不安的事情，或者觉得自己做不好的地方，或者希望自己能改变某些方面。"
     },
     {
       word: "identity",
       translation: "身份，认同感",
       exampleEn: "You have unconsciously, given them instructions on what to associate with you and your <em>identity</em>, right?",
-      exampleZh: "You have unconsciously, given them instructions on what to associate with you and your identity, right?"
+      exampleZh: "你在不知不觉中，已经给他们发出了信号，让他们将你和你所认同的身份联系在一起，对吧？"
     },
     {
       word: "crooked",
       translation: "歪斜的，不整齐的",
       exampleEn: "Like, if you\'re insecure that you think you have a big forehead or you\'re insecure that your teeth are <em>crooked</em> or you have a weird smile.",
-      exampleZh: "Like, if you\'re insecure that you think you have a big forehead or you\'re insecure that your teeth are crooked or you have a weird smile."
+      exampleZh: "比如，如果你因为觉得自己额头太大而不自信，或者因为牙齿不整齐而自卑，或者觉得自己笑容很奇怪。"
     },
     {
       word: "better off",
       translation: "处境更好，更幸福",
       exampleEn: "And we are always <em>better off</em>. We are more likely to be successful and just happier and better off.",
-      exampleZh: "And we are always better off. We are more likely to be successful and just happier and better off."
+      exampleZh: "而且我们的处境总会更好。我们更有可能获得成功，也更快乐、更幸福。"
     },
     {
       word: "worse off",
       translation: "处境更糟",
       exampleEn: "You are making them associate you with that label, which they\'ve probably never done before, which just makes you <em>worse off</em>.",
-      exampleZh: "You are making them associate you with that label, which they\'ve probably never done before, which just makes you worse off."
+      exampleZh: "你是在让他们把你和那个标签联系起来，而他们以前可能从来没有这样想过，这只会让你的处境更糟。"
     },
     {
       word: "solidify",
       translation: "巩固，使固化",
       exampleEn: "And the more you repeat those insecurities to yourself or to others over and over again, the more you <em>solidify</em> that into your identity.",
-      exampleZh: "And the more you repeat those insecurities to yourself or to others over and over again, the more you solidify that into your identity."
+      exampleZh: "你越是反复向自己或他人提及那些不安全感，就越会将其固化为你的身份认同。"
     },
     {
       word: "terrible with",
       translation: "很不擅长（某事）",
       exampleEn: "So if every week I\'m saying, I\'m so <em>terrible with</em> money.",
-      exampleZh: "So if every week I\'m saying, I\'m so terrible with money."
+      exampleZh: "所以如果我每周都在说，我太不擅长理财了。"
     },
     {
       word: "sabotaging",
       translation: "暗中破坏，自我毁灭",
       exampleEn: "I\'m always <em>sabotaging</em> my relationships.",
-      exampleZh: "I\'m always sabotaging my relationships."
+      exampleZh: "我总是破坏自己的人际关系。"
     },
     {
       word: "be discerning about",
       translation: "对…审慎选择/有辨别力",
       exampleEn: "So <em>be discerning about</em> which stories you choose to share out loud.",
-      exampleZh: "So be discerning about which stories you choose to share out loud."
+      exampleZh: "所以要谨慎选择你愿意大声分享出去的故事。"
     },
     {
       word: "resurfacing",
       translation: "重新浮现，再次出现",
       exampleEn: "Old insecurities that keep <em>resurfacing</em> or trying to move past mental blocks.",
-      exampleZh: "Old insecurities that keep resurfacing or trying to move past mental blocks."
+      exampleZh: "旧的不安全感不断浮现，或者试图克服过去的心理障碍。"
     },
     {
       word: "past mental blocks",
       translation: "克服心理障碍",
       exampleEn: "Old insecurities that keep resurfacing or trying to move <em>past mental blocks</em>.",
-      exampleZh: "Old insecurities that keep resurfacing or trying to move past mental blocks."
+      exampleZh: "旧的不安全感不断浮现，或者试图克服过去的心理障碍。"
     },
     {
       word: "in your corner",
       translation: "支持你，站在你这边",
       exampleEn: "Having someone <em>in your corner</em> can make a huge difference.",
-      exampleZh: "Having someone in your corner can make a huge difference."
+      exampleZh: "有一个支持你的人会带来巨大的改变。"
     },
     {
       word: "outside perspective",
       translation: "外部视角，旁观者角度",
       exampleEn: "And sometimes just having an <em>outside perspective</em> can help you get out of your own head and see things in a new life.",
-      exampleZh: "And sometimes just having an outside perspective can help you get out of your own head and see things in a new life."
+      exampleZh: "有时候，仅仅是一个外部的视角就能帮助你走出自己的思维定式，以全新的方式看待事物。"
     },
     {
       word: "commuting",
       translation: "通勤，上下班路程",
       exampleEn: "No waiting rooms, no <em>commuting</em>, just professional support from home on your own schedule.",
-      exampleZh: "No waiting rooms, no commuting, just professional support from home on your own schedule."
+      exampleZh: "没有候诊室，不用通勤，只需按照自己的时间安排在家即可获得专业支持。"
     },
     {
       word: "nuptial",
       translation: "婚姻的，婚礼的",
       exampleEn: "Or maybe you\'re just in your <em>nuptial</em> phase. And so you\'re getting angry about the littlest things and you want to vent every single time to your friend.",
-      exampleZh: "Or maybe you\'re just in your nuptial phase. And so you\'re getting angry about the littlest things and you want to vent every single time to your friend."
+      exampleZh: "又或者你只是处在新婚阶段。所以你会因为最小的事情生气，每次都想向朋友倾诉。"
     },
     {
       word: "pick up the slack",
       translation: "接手别人的工作，补上不足",
       exampleEn: "You\'re not talking about that time when he really picked up the slack when you needed it.",
-      exampleZh: "You\'re not talking about that time when he really picked up the slack when you needed it."
+      exampleZh: "你不会去谈论他真正在你需要时挺身而出的那些时刻。"
     },
     {
       word: "hiccups",
       translation: "小挫折，小问题",
       exampleEn: "Like everyone has some <em>hiccups</em> or makes mistakes or has weird moments here and there.",
-      exampleZh: "Like everyone has some hiccups or makes mistakes or has weird moments here and there."
+      exampleZh: "就像每个人都会有些小波折，犯些错误，或者时不时有些奇怪的时刻。"
     },
     {
       word: "caveat",
       translation: "注意事项，附带条件",
       exampleEn: "But I have a very important <em>caveat</em> here that you need to hear.",
-      exampleZh: "But I have a very important caveat here that you need to hear."
+      exampleZh: "但我这里有一个非常重要的注意事项，你需要听一听。"
     },
     {
       word: "discernment",
       translation: "辨别力，判断力",
       exampleEn: "Okay, so most of the time, having privacy and <em>discernment</em> around your finances is a very good thing and is usually the move.",
-      exampleZh: "Okay, so most of the time, having privacy and discernment around your finances is a very good thing and is usually the move."
+      exampleZh: "好的，所以在大多数时候，对你的财务状况保持隐私和审慎态度是非常好的做法，通常也是正确的选择。"
     },
     {
       word: "portfolio",
       translation: "投资组合，资产组合",
       exampleEn: "Like, you don\'t need to share how much money you\'re making when you meet a new friend or about your investment <em>portfolio</em> or how many revenue streams you have.",
-      exampleZh: "Like, you don\'t need to share how much money you\'re making when you meet a new friend or about your investment portfolio or how many revenue streams you have."
+      exampleZh: "比如，你不需要在结交新朋友时透露自己赚多少钱，也不需要分享你的投资组合或者有多少收入来源。"
     },
     {
       word: "lowball",
       translation: "故意压低（报价/估价）",
       exampleEn: "Comparing real financial numbers with a woman who you know knows what they\'re talking about so you don\'t get <em>lowball</em>ed.",
-      exampleZh: "Comparing real financial numbers with a woman who you know knows what they\'re talking about so you don\'t get lowballed."
+      exampleZh: "和一个你确信懂行的女性比较真实的财务数据，这样你就不会被压低报价。"
     },
     {
       word: "mastermind",
       translation: "智囊团，策划小组",
       exampleEn: "For example, I just joined this women\'s only business <em>mastermind</em> thing this year, and I\'ve never done anything like that.",
-      exampleZh: "For example, I just joined this women\'s only business mastermind thing this year, and I\'ve never done anything like that."
+      exampleZh: "例如，我今年刚加入了一个仅限女性的商业智囊团，我以前从来没有做过类似的事情。"
     }
     ]
   }
