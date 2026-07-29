@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>词汇闪卡练习</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -80,6 +81,29 @@
   .folder-count {
     font-size: .9rem;
     color: #888;
+  }
+  .upload-btn {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(123,47,247,.2);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(123,47,247,.3);
+  }
+  .upload-btn:hover {
+    background: rgba(123,47,247,.4);
+    border-color: rgba(123,47,247,.6);
+    transform: scale(1.08);
+  }
+  .upload-btn:active {
+    transform: scale(.95);
   }
 
   /* --- Start Screen --- */
@@ -378,21 +402,24 @@
   <h1>📚 词汇闪卡练习</h1>
   <p>请选择词组文件夹</p>
   <div class="folder-list">
-    <div class="folder-card" onclick="selectFolder(0)">
-      <div class="folder-icon">📁</div>
-      <div class="folder-info">
+    <div class="folder-card">
+      <div class="folder-icon" onclick="selectFolder(0)">📁</div>
+      <div class="folder-info" onclick="selectFolder(0)">
         <div class="folder-name">YouTube 生字和词组</div>
-        <div class="folder-count">31 个词组</div>
+        <div class="folder-count" id="folder-count-0">31 个词组</div>
       </div>
+      <button class="upload-btn" onclick="triggerUpload(0)" title="上传Excel补充词组">📤</button>
     </div>
-    <div class="folder-card" onclick="selectFolder(1)">
-      <div class="folder-icon">📁</div>
-      <div class="folder-info">
+    <div class="folder-card">
+      <div class="folder-icon" onclick="selectFolder(1)">📁</div>
+      <div class="folder-info" onclick="selectFolder(1)">
         <div class="folder-name">每日英语听力生词和词组</div>
-        <div class="folder-count">26 个词组</div>
+        <div class="folder-count" id="folder-count-1">26 个词组</div>
       </div>
+      <button class="upload-btn" onclick="triggerUpload(1)" title="上传Excel补充词组">📤</button>
     </div>
   </div>
+  <input type="file" id="upload-input" accept=".xlsx,.xls" style="display:none" onchange="handleUpload(event)">
 </div>
 
 <!-- Start Screen -->
@@ -828,6 +855,105 @@ function goToFolderScreen() {
   document.getElementById('quiz-screen').style.display = 'none';
   document.getElementById('end-screen').style.display = 'none';
   document.getElementById('folder-screen').style.display = 'block';
+  // Refresh folder counts when returning to folder screen
+  updateFolderCounts();
+}
+
+// ---- Upload Functions ----
+var pendingUploadFolder = null;
+
+function triggerUpload(folderIdx) {
+  pendingUploadFolder = folderIdx;
+  document.getElementById('upload-input').value = '';
+  document.getElementById('upload-input').click();
+}
+
+function handleUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+
+  var folderIdx = pendingUploadFolder;
+  if (folderIdx === null) return;
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, { type: 'array' });
+      var sheet = workbook.Sheets[workbook.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+      if (rows.length < 2) {
+        alert('Excel 文件为空或格式不正确，请至少包含一行数据。');
+        return;
+      }
+
+      // Try to identify columns from header row
+      var header = rows[0];
+      var colMap = { word: -1, translation: -1, exampleEn: -1, exampleZh: -1 };
+
+      for (var i = 0; i < header.length; i++) {
+        var h = String(header[i]).toLowerCase().trim();
+        if (h === 'word' || h === '英文' || h === '单词' || h === '词组') colMap.word = i;
+        else if (h === 'translation' || h === '中文' || h === '翻译') colMap.translation = i;
+        else if (h === 'exampleen' || h === '英文例句' || h === '例句') colMap.exampleEn = i;
+        else if (h === 'examplezh' || h === '中文例句' || h === '中文翻译') colMap.exampleZh = i;
+      }
+
+      // Fallback: if header not recognized, assume order: word, translation, exampleEn, exampleZh
+      if (colMap.word === -1) {
+        colMap.word = 0;
+        colMap.translation = 1;
+        colMap.exampleEn = 2;
+        colMap.exampleZh = 3;
+      }
+
+      var added = 0;
+      for (var r = 1; r < rows.length; r++) {
+        var row = rows[r];
+        var word = row[colMap.word];
+        if (!word || String(word).trim() === '') continue;
+
+        var exampleEn = row[colMap.exampleEn];
+        var exampleZh = row[colMap.exampleZh];
+
+        // If exampleEn contains em tags, keep as-is; otherwise wrap keyword in em
+        var exampleHtml = exampleEn ? String(exampleEn) : '';
+        if (exampleHtml && exampleHtml.indexOf('<em>') === -1) {
+          var wordStr = String(word).trim();
+          var regex = new RegExp(wordStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+          exampleHtml = exampleHtml.replace(regex, '<em>' + wordStr + '</em>');
+        }
+
+        folders[folderIdx].cards.push({
+          word: String(word).trim(),
+          translation: row[colMap.translation] ? String(row[colMap.translation]).trim() : '',
+          exampleEn: exampleHtml,
+          exampleZh: exampleZh ? String(exampleZh).trim() : ''
+        });
+        added++;
+      }
+
+      if (added > 0) {
+        updateFolderCounts();
+        alert('✅ 成功添加 ' + added + ' 个词组到「' + folders[folderIdx].name + '」！');
+      } else {
+        alert('⚠️ 未找到有效词组数据，请检查 Excel 格式。');
+      }
+    } catch (err) {
+      alert('解析文件失败：' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function updateFolderCounts() {
+  for (var i = 0; i < folders.length; i++) {
+    var el = document.getElementById('folder-count-' + i);
+    if (el) {
+      el.textContent = folders[i].cards.length + ' 个词组';
+    }
+  }
 }
 
 // 语音朗读函数
@@ -1056,7 +1182,7 @@ document.addEventListener('click', function(e) {
     return;
   }
   // Don't trigger on folder cards, inputs, or other interactive elements
-  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn') || e.target.closest('.nav-arrow')) {
+  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn') || e.target.closest('.nav-arrow') || e.target.closest('.upload-btn')) {
     return;
   }
   handleUserAction();
