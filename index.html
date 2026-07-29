@@ -284,6 +284,48 @@
     font-size: .85rem;
   }
 
+  .nav-arrows {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin-top: 20px;
+  }
+  .nav-arrow {
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 50%;
+    background: #16213e;
+    color: #aaa;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #333;
+  }
+  .nav-arrow:hover {
+    background: #1a2744;
+    color: #00d2ff;
+    border-color: #00d2ff;
+    transform: scale(1.1);
+  }
+  .nav-arrow:active {
+    transform: scale(.95);
+  }
+  .nav-arrow:disabled {
+    opacity: .3;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .nav-arrow:disabled:hover {
+    background: #16213e;
+    color: #aaa;
+    border-color: #333;
+  }
+
   /* --- End Screen --- */
   #end-screen {
     display: none;
@@ -383,6 +425,10 @@
     </div>
   </div>
   <div class="hint" id="hint"></div>
+  <div class="nav-arrows">
+    <button class="nav-arrow" id="prev-btn" onclick="goBack()" title="上一个">◀</button>
+    <button class="nav-arrow" id="next-btn" onclick="skipForward()" title="下一个">▶</button>
+  </div>
 </div>
 
 <!-- End Screen -->
@@ -880,6 +926,12 @@ function displayWord() {
   wordCard.style.animation = 'none';
   wordCard.offsetHeight;
   wordCard.style.animation = 'fadeIn .35s ease';
+  
+  // 更新前进后退按钮状态
+  var prevBtn = document.getElementById('prev-btn');
+  var nextBtn = document.getElementById('next-btn');
+  if (prevBtn) prevBtn.disabled = (currentIndex === 0);
+  if (nextBtn) nextBtn.disabled = (currentIndex >= total - 1);
 }
 
 function updateHint() {
@@ -904,6 +956,24 @@ function showExampleSection() {
 function goToNextWord() {
   currentIndex++;
   displayWord();
+}
+
+// 后退到上一个单词
+function goBack() {
+  if (currentIndex > 0) {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    currentIndex--;
+    displayWord();
+  }
+}
+
+// 前进到下一个单词（跳过当前）
+function skipForward() {
+  if (currentIndex < total - 1) {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    currentIndex++;
+    displayWord();
+  }
 }
 
 function jumpToWord() {
@@ -986,7 +1056,7 @@ document.addEventListener('click', function(e) {
     return;
   }
   // Don't trigger on folder cards, inputs, or other interactive elements
-  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn')) {
+  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn') || e.target.closest('.nav-arrow')) {
     return;
   }
   handleUserAction();
