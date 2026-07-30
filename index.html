@@ -600,358 +600,442 @@
 <script>
 var folders = [
   {
-    name: "YouTube 生字和词组",
-    cards: [
-    {
-      word: "record-setting",
-      translation: "创纪录的",
-      exampleEn: "Analysis of the Pascal A nuclear test and its <em>record-setting</em> steel plate.",
-      exampleZh: "帕斯卡A核试验及其创纪录的钢板分析。"
-    },
-    {
-      word: "catastrophically",
-      translation: "灾难性地",
-      exampleEn: "The 1956 Pascal A nuclear test failed <em>catastrophically</em> due to a yield calculation error.",
-      exampleZh: "1956年帕斯卡A核试验因当量计算错误而灾难性地失败了。"
-    },
-    {
-      word: "yield calculation error",
-      translation: "当量计算错误",
-      exampleEn: "…failed catastrophically due to a <em>yield calculation error</em>.",
-      exampleZh: "……因当量计算错误而灾难性地失败了。"
-    },
-    {
-      word: "interstellar space",
-      translation: "星际空间",
-      exampleEn: "The plate could theoretically travel into <em>interstellar space</em>.",
-      exampleZh: "该钢板理论上可以飞入星际空间。"
-    },
-    {
-      word: "Test Setup & Objective",
-      translation: "试验设置与目标",
-      exampleEn: "<em>Test Setup & Objective</em>: The scientists dug a 150m deep, 1.2m diameter test shaft.",
-      exampleZh: "试验设置与目标：科学家挖掘了一口150米深、直径1.2米的试验井。"
-    },
-    {
-      word: "Projectile",
-      translation: "抛射物；发射物",
-      exampleEn: "The High-Speed <em>Projectile</em> — referring to the 900kg steel plate cover.",
-      exampleZh: "高速抛射物——指的是900公斤的钢板盖。"
-    },
-    {
-      word: "Planned yield",
-      translation: "计划当量",
-      exampleEn: "<em>Planned yield</em> was equivalent to 6kg of TNT.",
-      exampleZh: "计划当量相当于6公斤TNT。"
-    },
-    {
-      word: "threshold",
-      translation: "阈值；临界值",
-      exampleEn: "The plate's speed far exceeded this <em>threshold</em>.",
-      exampleZh: "钢板的速度远远超过了这个阈值（太阳系逃逸速度16.7km/s）。"
-    },
-    {
-      word: "intercontinental missiles",
-      translation: "洲际导弹",
-      exampleEn: "Faster than rockets or <em>intercontinental missiles</em>.",
-      exampleZh: "比火箭或洲际导弹还要快。"
-    },
-    {
-      word: "Record-setting speed, >194 Mach",
-      translation: "创纪录的速度，超过194马赫",
-      exampleEn: "Significance: <em>Record-setting speed, >194 Mach</em>.",
-      exampleZh: "意义：创纪录的速度，超过194马赫。"
-    },
-    {
-      word: "macroscopic object",
-      translation: "宏观物体",
-      exampleEn: "The fastest man-made <em>macroscopic object</em> in recorded human history.",
-      exampleZh: "人类有记录以来最快的自制宏观物体。"
-    },
-    {
-      word: "trigger a controlled",
-      translation: "引发一次可控的…",
-      exampleEn: "Planned to <em>trigger a controlled</em> underground nuclear explosion.",
-      exampleZh: "计划引发一次可控的地下核爆炸。"
-    },
-    {
-      word: "pre-set planned yield",
-      translation: "预先设定的计划当量",
-      exampleEn: "50,000 times the <em>pre-set planned yield</em> for the test.",
-      exampleZh: "是试验预先设定的计划当量的5万倍。"
-    },
-    {
-      word: "Shaft Transformation",
-      translation: "竖井蜕变/转化",
-      exampleEn: "<em>Shaft Transformation</em>: The massive energy instantly vaporized internal concrete structures.",
-      exampleZh: "竖井蜕变：巨大的能量瞬间汽化了内部混凝土结构，把试验井变成了巨型发射炮筒。"
-    },
-    {
-      word: "ejected",
-      translation: "被弹射出的",
-      exampleEn: "The high-speed camera only captured the <em>ejected</em> steel cover in a single frame.",
-      exampleZh: "高速相机仅在一帧画面中捕捉到了被弹射出的钢盖。"
-    },
-    {
-      word: "footage",
-      translation: "影像；录像片段",
-      exampleEn: "No continuous tracking <em>footage</em> available for reference.",
-      exampleZh: "没有连续的跟踪影像可供参考。"
-    },
-    {
-      word: "opening hook",
-      translation: "开场钩子；开场引子",
-      exampleEn: "It serves as the <em>opening hook</em> that frames the core topic of the entire sharing session.",
-      exampleZh: "它充当了整个分享会的开场钩子，引出了核心话题。"
-    },
-    {
-      word: "the core empirical data",
-      translation: "核心实测数据",
-      exampleEn: "It provides <em>the core empirical data</em> that supports the claim of the object being a speed record holder.",
-      exampleZh: "它提供了支持该物体成为速度纪录保持者的核心实测数据。"
-    },
-    {
-      word: "Core Technical Parameters",
-      translation: "核心技术参数",
-      exampleEn: "<em>Core Technical Parameters</em>",
-      exampleZh: "核心技术参数"
-    },
-    {
-      word: "Active Balancing System",
-      translation: "主动平衡系统",
-      exampleEn: "<em>Active Balancing System</em> ▪Hardware & Algorithm: Equipped with a steel reaction wheel running on a 200 Hz PID loop with dynamic balance point adjustment, all powered by an STM32 microcontroller. ▪Anti-Toppling Performance: Delivers fast, stable recovery from any lateral external force applied to the vehicle, eliminating the inherent toppling risk of traditional two-wheeled structures.",
-      exampleZh: "主动平衡系统"
-    },
-    {
-      word: "Autonomous Driving Module",
-      translation: "自动驾驶模块",
-      exampleEn: "<em>Autonomous Driving Module</em>: Adopts a stereo depth camera and lidar sensor to collect surrounding environment data, supporting the vehicle's stable autonomous driving operation logic.",
-      exampleZh: "自动驾驶模块"
-    },
-    {
-      word: "Project Positioning & Resource Disclosure",
-      translation: "项目定位与资源公开",
-      exampleEn: "<em>Project Positioning & Resource Disclosure</em>",
-      exampleZh: "项目定位与资源公开"
-    },
-    {
-      word: "Core Application Direction",
-      translation: "核心应用方向",
-      exampleEn: "<em>Core Application Direction</em> ▪Research Foundation Role: Serves as a dedicated foundational platform to lower the threshold for relevant teams to carry out autonomous two-wheeled vehicle research. ▪Long-Term Commercial Prospect: The team notes the technology can be further optimized to act as a high-efficiency solution for urban logistics and delivery scenarios.",
-      exampleZh: "核心应用方向"
-    },
-    {
-      word: "Open Source Resource Release",
-      translation: "开源资源发布",
-      exampleEn: "<em>Open Source Resource Release</em>: All core development resources including 3D CAD models, full source code and complete component lists are released for free public access.",
-      exampleZh: "开源资源发布"
-    },
-    {
-      word: "Project Initiation Background",
-      translation: "项目启动背景",
-      exampleEn: "<em>Project Initiation Background</em>",
-      exampleZh: "项目启动背景"
-    },
-    {
-      word: "Program Setting",
-      translation: "项目设定",
-      exampleEn: "<em>Program Setting</em>: The project was launched as a fully self-defined independent research program, with no predefined scope boundaries set for the entire development process.",
-      exampleZh: "项目设定"
-    },
-    {
-      word: "Supervision Support",
-      translation: "指导支持",
-      exampleEn: "<em>Supervision Support</em>: The independent research program is carried out under the guidance of instructor Victoria Preston from Owen College.",
-      exampleZh: "指导支持"
-    },
-    {
-      word: "Project Introduction",
-      translation: "项目介绍",
-      exampleEn: "<em>Project Introduction</em>: The presenters introduced the self-developed autonomous self-balancing bicycle project they completed as Owen freshmen.",
-      exampleZh: "项目介绍"
-    },
-    {
-      word: "Technical Implementation",
-      translation: "技术实现",
-      exampleEn: "<em>Technical Implementation</em>: The bicycle uses a steel reaction wheel with a 200 Hz PID loop running on STM32 for active balancing, and adopts a stereo depth camera and lidar sensor for autonomous driving.",
-      exampleZh: "技术实现"
-    },
-    {
-      word: "Project Attributes",
-      translation: "项目属性",
-      exampleEn: "<em>Project Attributes</em>: The project is designed as an open-source platform, with all relevant files including 3D CAD models, code and material lists publicly available online, originally initiated as an independent study research project.",
-      exampleZh: "项目属性"
-    },
-    {
-      word: "Application Prospect",
-      translation: "应用前景",
-      exampleEn: "<em>Application Prospect</em>: The project is positioned as a foundational research platform for autonomous two-wheeled vehicles, and can be applied to more efficient delivery scenarios in the future.",
-      exampleZh: "应用前景"
-    }
+    "name": "YouTube 生字和词组",
+    "cards": [
+      {
+        "word": "record-setting",
+        "translation": "创纪录的",
+        "exampleEn": "Analysis of the Pascal A nuclear test and its <em>record-setting</em> steel plate.",
+        "exampleZh": "帕斯卡A核试验及其创纪录的钢板分析。"
+      },
+      {
+        "word": "catastrophically",
+        "translation": "灾难性地",
+        "exampleEn": "The 1956 Pascal A nuclear test failed <em>catastrophically</em> due to a yield calculation error.",
+        "exampleZh": "1956年帕斯卡A核试验因当量计算错误而灾难性地失败了。"
+      },
+      {
+        "word": "yield calculation error",
+        "translation": "当量计算错误",
+        "exampleEn": "…failed catastrophically due to a <em>yield calculation error</em>.",
+        "exampleZh": "……因当量计算错误而灾难性地失败了。"
+      },
+      {
+        "word": "interstellar space",
+        "translation": "星际空间",
+        "exampleEn": "The plate could theoretically travel into <em>interstellar space</em>.",
+        "exampleZh": "该钢板理论上可以飞入星际空间。"
+      },
+      {
+        "word": "Test Setup & Objective",
+        "translation": "试验设置与目标",
+        "exampleEn": "<em>Test Setup & Objective</em>: The scientists dug a 150m deep, 1.2m diameter test shaft.",
+        "exampleZh": "试验设置与目标：科学家挖掘了一口150米深、直径1.2米的试验井。"
+      },
+      {
+        "word": "Projectile",
+        "translation": "抛射物；发射物",
+        "exampleEn": "The High-Speed <em>Projectile</em> — referring to the 900kg steel plate cover.",
+        "exampleZh": "高速抛射物——指的是900公斤的钢板盖。"
+      },
+      {
+        "word": "Planned yield",
+        "translation": "计划当量",
+        "exampleEn": "<em>Planned yield</em> was equivalent to 6kg of TNT.",
+        "exampleZh": "计划当量相当于6公斤TNT。"
+      },
+      {
+        "word": "threshold",
+        "translation": "阈值；临界值",
+        "exampleEn": "The plate's speed far exceeded this <em>threshold</em>.",
+        "exampleZh": "钢板的速度远远超过了这个阈值（太阳系逃逸速度16.7km/s）。"
+      },
+      {
+        "word": "intercontinental missiles",
+        "translation": "洲际导弹",
+        "exampleEn": "Faster than rockets or <em>intercontinental missiles</em>.",
+        "exampleZh": "比火箭或洲际导弹还要快。"
+      },
+      {
+        "word": "Record-setting speed, >194 Mach",
+        "translation": "创纪录的速度，超过194马赫",
+        "exampleEn": "Significance: <em>Record-setting speed, >194 Mach</em>.",
+        "exampleZh": "意义：创纪录的速度，超过194马赫。"
+      },
+      {
+        "word": "macroscopic object",
+        "translation": "宏观物体",
+        "exampleEn": "The fastest man-made <em>macroscopic object</em> in recorded human history.",
+        "exampleZh": "人类有记录以来最快的自制宏观物体。"
+      },
+      {
+        "word": "trigger a controlled",
+        "translation": "引发一次可控的…",
+        "exampleEn": "Planned to <em>trigger a controlled</em> underground nuclear explosion.",
+        "exampleZh": "计划引发一次可控的地下核爆炸。"
+      },
+      {
+        "word": "pre-set planned yield",
+        "translation": "预先设定的计划当量",
+        "exampleEn": "50,000 times the <em>pre-set planned yield</em> for the test.",
+        "exampleZh": "是试验预先设定的计划当量的5万倍。"
+      },
+      {
+        "word": "Shaft Transformation",
+        "translation": "竖井蜕变/转化",
+        "exampleEn": "<em>Shaft Transformation</em>: The massive energy instantly vaporized internal concrete structures.",
+        "exampleZh": "竖井蜕变：巨大的能量瞬间汽化了内部混凝土结构，把试验井变成了巨型发射炮筒。"
+      },
+      {
+        "word": "ejected",
+        "translation": "被弹射出的",
+        "exampleEn": "The high-speed camera only captured the <em>ejected</em> steel cover in a single frame.",
+        "exampleZh": "高速相机仅在一帧画面中捕捉到了被弹射出的钢盖。"
+      },
+      {
+        "word": "footage",
+        "translation": "影像；录像片段",
+        "exampleEn": "No continuous tracking <em>footage</em> available for reference.",
+        "exampleZh": "没有连续的跟踪影像可供参考。"
+      },
+      {
+        "word": "opening hook",
+        "translation": "开场钩子；开场引子",
+        "exampleEn": "It serves as the <em>opening hook</em> that frames the core topic of the entire sharing session.",
+        "exampleZh": "它充当了整个分享会的开场钩子，引出了核心话题。"
+      },
+      {
+        "word": "the core empirical data",
+        "translation": "核心实测数据",
+        "exampleEn": "It provides <em>the core empirical data</em> that supports the claim of the object being a speed record holder.",
+        "exampleZh": "它提供了支持该物体成为速度纪录保持者的核心实测数据。"
+      },
+      {
+        "word": "Core Technical Parameters",
+        "translation": "核心技术参数",
+        "exampleEn": "<em>Core Technical Parameters</em>",
+        "exampleZh": "核心技术参数"
+      },
+      {
+        "word": "Active Balancing System",
+        "translation": "主动平衡系统",
+        "exampleEn": "<em>Active Balancing System</em> ▪Hardware & Algorithm: Equipped with a steel reaction wheel running on a 200 Hz PID loop with dynamic balance point adjustment, all powered by an STM32 microcontroller. ▪Anti-Toppling Performance: Delivers fast, stable recovery from any lateral external force applied to the vehicle, eliminating the inherent toppling risk of traditional two-wheeled structures.",
+        "exampleZh": "主动平衡系统"
+      },
+      {
+        "word": "Autonomous Driving Module",
+        "translation": "自动驾驶模块",
+        "exampleEn": "<em>Autonomous Driving Module</em>: Adopts a stereo depth camera and lidar sensor to collect surrounding environment data, supporting the vehicle's stable autonomous driving operation logic.",
+        "exampleZh": "自动驾驶模块"
+      },
+      {
+        "word": "Project Positioning & Resource Disclosure",
+        "translation": "项目定位与资源公开",
+        "exampleEn": "<em>Project Positioning & Resource Disclosure</em>",
+        "exampleZh": "项目定位与资源公开"
+      },
+      {
+        "word": "Core Application Direction",
+        "translation": "核心应用方向",
+        "exampleEn": "<em>Core Application Direction</em> ▪Research Foundation Role: Serves as a dedicated foundational platform to lower the threshold for relevant teams to carry out autonomous two-wheeled vehicle research. ▪Long-Term Commercial Prospect: The team notes the technology can be further optimized to act as a high-efficiency solution for urban logistics and delivery scenarios.",
+        "exampleZh": "核心应用方向"
+      },
+      {
+        "word": "Open Source Resource Release",
+        "translation": "开源资源发布",
+        "exampleEn": "<em>Open Source Resource Release</em>: All core development resources including 3D CAD models, full source code and complete component lists are released for free public access.",
+        "exampleZh": "开源资源发布"
+      },
+      {
+        "word": "Project Initiation Background",
+        "translation": "项目启动背景",
+        "exampleEn": "<em>Project Initiation Background</em>",
+        "exampleZh": "项目启动背景"
+      },
+      {
+        "word": "Program Setting",
+        "translation": "项目设定",
+        "exampleEn": "<em>Program Setting</em>: The project was launched as a fully self-defined independent research program, with no predefined scope boundaries set for the entire development process.",
+        "exampleZh": "项目设定"
+      },
+      {
+        "word": "Supervision Support",
+        "translation": "指导支持",
+        "exampleEn": "<em>Supervision Support</em>: The independent research program is carried out under the guidance of instructor Victoria Preston from Owen College.",
+        "exampleZh": "指导支持"
+      },
+      {
+        "word": "Project Introduction",
+        "translation": "项目介绍",
+        "exampleEn": "<em>Project Introduction</em>: The presenters introduced the self-developed autonomous self-balancing bicycle project they completed as Owen freshmen.",
+        "exampleZh": "项目介绍"
+      },
+      {
+        "word": "Technical Implementation",
+        "translation": "技术实现",
+        "exampleEn": "<em>Technical Implementation</em>: The bicycle uses a steel reaction wheel with a 200 Hz PID loop running on STM32 for active balancing, and adopts a stereo depth camera and lidar sensor for autonomous driving.",
+        "exampleZh": "技术实现"
+      },
+      {
+        "word": "Project Attributes",
+        "translation": "项目属性",
+        "exampleEn": "<em>Project Attributes</em>: The project is designed as an open-source platform, with all relevant files including 3D CAD models, code and material lists publicly available online, originally initiated as an independent study research project.",
+        "exampleZh": "项目属性"
+      },
+      {
+        "word": "Application Prospect",
+        "translation": "应用前景",
+        "exampleEn": "<em>Application Prospect</em>: The project is positioned as a foundational research platform for autonomous two-wheeled vehicles, and can be applied to more efficient delivery scenarios in the future.",
+        "exampleZh": "应用前景"
+      },
+      {
+        "word": "deal with",
+        "translation": "处理；应对",
+        "exampleEn": "I don't wanna <em>deal with</em> them anymore.",
+        "exampleZh": "我不想再应付他们了。"
+      },
+      {
+        "word": "sick people",
+        "translation": "病态的人；有毛病的人",
+        "exampleEn": "There's <em>sick people</em>.",
+        "exampleZh": "那里有（一些）病态的人。"
+      },
+      {
+        "word": "led by",
+        "translation": "由……领导 / 被……带领",
+        "exampleEn": "They're <em>led by</em> sick people.",
+        "exampleZh": "他们被病态的人领导着。"
+      },
+      {
+        "word": "vicious",
+        "translation": "恶毒的；凶残的",
+        "exampleEn": "They're <em>vicious</em>, violent people.",
+        "exampleZh": "他们是恶毒、暴力的人。"
+      },
+      {
+        "word": "violent",
+        "translation": "暴力的；激烈的",
+        "exampleEn": "They're vicious, <em>violent</em> people.",
+        "exampleZh": "他们是恶毒、暴力的人。"
+      },
+      {
+        "word": "nuclear weapon",
+        "translation": "核武器",
+        "exampleEn": "If they had a <em>nuclear weapon</em>, they'd use it.",
+        "exampleZh": "如果他们有核武器，他们会使用它。"
+      },
+      {
+        "word": "as far as I'm concerned",
+        "translation": "就我而言；在我看来",
+        "exampleEn": "<em>as far as I'm concerned</em>, it's over.",
+        "exampleZh": "就我而言，这事结束了。"
+      },
+      {
+        "word": "negotiators",
+        "translation": "谈判代表；谈判人员",
+        "exampleEn": "I'll speak to our <em>negotiators</em>.",
+        "exampleZh": "我会和我们这边的谈判代表谈。"
+      },
+      {
+        "word": "wake up",
+        "translation": "醒醒；清醒点",
+        "exampleEn": "<em>wake up</em>, Jared Christian.",
+        "exampleZh": "醒醒吧，Jared Christian。"
+      },
+      {
+        "word": "waste of time",
+        "translation": "浪费时间",
+        "exampleEn": "It's just a <em>waste of time</em> dealing with them.",
+        "exampleZh": "和他们打交道纯粹是浪费时间。"
+      },
+      {
+        "word": "liars",
+        "translation": "说谎者；骗子",
+        "exampleEn": "They're <em>liars</em>.",
+        "exampleZh": "他们是骗子。"
+      },
+      {
+        "word": "make a deal",
+        "translation": "达成协议；做交易",
+        "exampleEn": "We <em>make a deal</em> and then...",
+        "exampleZh": "我们达成协议，然后……"
+      },
+      {
+        "word": "press",
+        "translation": "媒体；新闻界",
+        "exampleEn": "They go outside, talk to the <em>press</em>.",
+        "exampleZh": "他们走到外面，对媒体发言。"
+      },
+      {
+        "word": "cuckoo",
+        "translation": "疯狂的；古怪的（俚语）",
+        "exampleEn": "There's something wrong with them. They're <em>cuckoo</em>.",
+        "exampleZh": "他们有点不对劲，他们疯了。"
+      }
     ]
   },
   {
-    name: "每日英语听力生词和词组",
-    cards: [
-    {
-      word: "tap into",
-      translation: "利用，发掘，深入挖掘",
-      exampleEn: "My name\'s Jills, and I help women step into their power, <em>tap into</em> their divine feminine, and become their best self, live their best life.",
-      exampleZh: "我叫Jills，我帮助女性释放她们的力量，发掘她们内在的神圣女性特质，成为最好的自己，过上最好的生活。"
-    },
-    {
-      word: "divine feminine",
-      translation: "神圣的女性特质",
-      exampleEn: "My name\'s Jills, and I help women step into their power, tap into their <em>divine feminine</em>, and become their best self, live their best life.",
-      exampleZh: "我叫Jills，我帮助女性释放她们的力量，发掘她们内在的神圣女性特质，成为最好的自己，过上最好的生活。"
-    },
-    {
-      word: "stand by",
-      translation: "坚持，支持，信守",
-      exampleEn: "And I <em>stand by</em> this, is your insecurities.",
-      exampleZh: "而我坚持这一点，就是你的不安全感。"
-    },
-    {
-      word: "insecurities",
-      translation: "不安全感，自卑",
-      exampleEn: "The 1st thing that I think every woman should keep private. And I stand by this, is your <em>insecurities</em>.",
-      exampleZh: "我认为每个女人都应该保守的第一件事。而我坚持这一点，就是你的不安全感。"
-    },
-    {
-      word: "self-conscious about",
-      translation: "对…感到不安/在意",
-      exampleEn: "Everyone has things that they are <em>self-conscious about</em> or feel like they\'re not good at or wish something about them would change.",
-      exampleZh: "每个人都有让自己感到不安的事情，或者觉得自己做不好的地方，或者希望自己能改变某些方面。"
-    },
-    {
-      word: "identity",
-      translation: "身份，认同感",
-      exampleEn: "You have unconsciously, given them instructions on what to associate with you and your <em>identity</em>, right?",
-      exampleZh: "你在不知不觉中，已经给他们发出了信号，让他们将你和你所认同的身份联系在一起，对吧？"
-    },
-    {
-      word: "crooked",
-      translation: "歪斜的，不整齐的",
-      exampleEn: "Like, if you\'re insecure that you think you have a big forehead or you\'re insecure that your teeth are <em>crooked</em> or you have a weird smile.",
-      exampleZh: "比如，如果你因为觉得自己额头太大而不自信，或者因为牙齿不整齐而自卑，或者觉得自己笑容很奇怪。"
-    },
-    {
-      word: "better off",
-      translation: "处境更好，更幸福",
-      exampleEn: "And we are always <em>better off</em>. We are more likely to be successful and just happier and better off.",
-      exampleZh: "而且我们的处境总会更好。我们更有可能获得成功，也更快乐、更幸福。"
-    },
-    {
-      word: "worse off",
-      translation: "处境更糟",
-      exampleEn: "You are making them associate you with that label, which they\'ve probably never done before, which just makes you <em>worse off</em>.",
-      exampleZh: "你是在让他们把你和那个标签联系起来，而他们以前可能从来没有这样想过，这只会让你的处境更糟。"
-    },
-    {
-      word: "solidify",
-      translation: "巩固，使固化",
-      exampleEn: "And the more you repeat those insecurities to yourself or to others over and over again, the more you <em>solidify</em> that into your identity.",
-      exampleZh: "你越是反复向自己或他人提及那些不安全感，就越会将其固化为你的身份认同。"
-    },
-    {
-      word: "terrible with",
-      translation: "很不擅长（某事）",
-      exampleEn: "So if every week I\'m saying, I\'m so <em>terrible with</em> money.",
-      exampleZh: "所以如果我每周都在说，我太不擅长理财了。"
-    },
-    {
-      word: "sabotaging",
-      translation: "暗中破坏，自我毁灭",
-      exampleEn: "I\'m always <em>sabotaging</em> my relationships.",
-      exampleZh: "我总是破坏自己的人际关系。"
-    },
-    {
-      word: "be discerning about",
-      translation: "对…审慎选择/有辨别力",
-      exampleEn: "So <em>be discerning about</em> which stories you choose to share out loud.",
-      exampleZh: "所以要谨慎选择你愿意大声分享出去的故事。"
-    },
-    {
-      word: "resurfacing",
-      translation: "重新浮现，再次出现",
-      exampleEn: "Old insecurities that keep <em>resurfacing</em> or trying to move past mental blocks.",
-      exampleZh: "旧的不安全感不断浮现，或者试图克服过去的心理障碍。"
-    },
-    {
-      word: "past mental blocks",
-      translation: "克服心理障碍",
-      exampleEn: "Old insecurities that keep resurfacing or trying to move <em>past mental blocks</em>.",
-      exampleZh: "旧的不安全感不断浮现，或者试图克服过去的心理障碍。"
-    },
-    {
-      word: "in your corner",
-      translation: "支持你，站在你这边",
-      exampleEn: "Having someone <em>in your corner</em> can make a huge difference.",
-      exampleZh: "有一个支持你的人会带来巨大的改变。"
-    },
-    {
-      word: "outside perspective",
-      translation: "外部视角，旁观者角度",
-      exampleEn: "And sometimes just having an <em>outside perspective</em> can help you get out of your own head and see things in a new life.",
-      exampleZh: "有时候，仅仅是一个外部的视角就能帮助你走出自己的思维定式，以全新的方式看待事物。"
-    },
-    {
-      word: "commuting",
-      translation: "通勤，上下班路程",
-      exampleEn: "No waiting rooms, no <em>commuting</em>, just professional support from home on your own schedule.",
-      exampleZh: "没有候诊室，不用通勤，只需按照自己的时间安排在家即可获得专业支持。"
-    },
-    {
-      word: "nuptial",
-      translation: "婚姻的，婚礼的",
-      exampleEn: "Or maybe you\'re just in your <em>nuptial</em> phase. And so you\'re getting angry about the littlest things and you want to vent every single time to your friend.",
-      exampleZh: "又或者你只是处在新婚阶段。所以你会因为最小的事情生气，每次都想向朋友倾诉。"
-    },
-    {
-      word: "pick up the slack",
-      translation: "接手别人的工作，补上不足",
-      exampleEn: "You\'re not talking about that time when he really picked up the slack when you needed it.",
-      exampleZh: "你不会去谈论他真正在你需要时挺身而出的那些时刻。"
-    },
-    {
-      word: "hiccups",
-      translation: "小挫折，小问题",
-      exampleEn: "Like everyone has some <em>hiccups</em> or makes mistakes or has weird moments here and there.",
-      exampleZh: "就像每个人都会有些小波折，犯些错误，或者时不时有些奇怪的时刻。"
-    },
-    {
-      word: "caveat",
-      translation: "注意事项，附带条件",
-      exampleEn: "But I have a very important <em>caveat</em> here that you need to hear.",
-      exampleZh: "但我这里有一个非常重要的注意事项，你需要听一听。"
-    },
-    {
-      word: "discernment",
-      translation: "辨别力，判断力",
-      exampleEn: "Okay, so most of the time, having privacy and <em>discernment</em> around your finances is a very good thing and is usually the move.",
-      exampleZh: "好的，所以在大多数时候，对你的财务状况保持隐私和审慎态度是非常好的做法，通常也是正确的选择。"
-    },
-    {
-      word: "portfolio",
-      translation: "投资组合，资产组合",
-      exampleEn: "Like, you don\'t need to share how much money you\'re making when you meet a new friend or about your investment <em>portfolio</em> or how many revenue streams you have.",
-      exampleZh: "比如，你不需要在结交新朋友时透露自己赚多少钱，也不需要分享你的投资组合或者有多少收入来源。"
-    },
-    {
-      word: "lowball",
-      translation: "故意压低（报价/估价）",
-      exampleEn: "Comparing real financial numbers with a woman who you know knows what they\'re talking about so you don\'t get <em>lowball</em>ed.",
-      exampleZh: "和一个你确信懂行的女性比较真实的财务数据，这样你就不会被压低报价。"
-    },
-    {
-      word: "mastermind",
-      translation: "智囊团，策划小组",
-      exampleEn: "For example, I just joined this women\'s only business <em>mastermind</em> thing this year, and I\'ve never done anything like that.",
-      exampleZh: "例如，我今年刚加入了一个仅限女性的商业智囊团，我以前从来没有做过类似的事情。"
-    }
+    "name": "每日英语听力生词和词组",
+    "cards": [
+      {
+        "word": "tap into",
+        "translation": "利用，发掘，深入挖掘",
+        "exampleEn": "My name's Jills, and I help women step into their power, <em>tap into</em> their divine feminine, and become their best self, live their best life.",
+        "exampleZh": "我叫Jills，我帮助女性释放她们的力量，发掘她们内在的神圣女性特质，成为最好的自己，过上最好的生活。"
+      },
+      {
+        "word": "divine feminine",
+        "translation": "神圣的女性特质",
+        "exampleEn": "My name's Jills, and I help women step into their power, tap into their <em>divine feminine</em>, and become their best self, live their best life.",
+        "exampleZh": "我叫Jills，我帮助女性释放她们的力量，发掘她们内在的神圣女性特质，成为最好的自己，过上最好的生活。"
+      },
+      {
+        "word": "stand by",
+        "translation": "坚持，支持，信守",
+        "exampleEn": "And I <em>stand by</em> this, is your insecurities.",
+        "exampleZh": "而我坚持这一点，就是你的不安全感。"
+      },
+      {
+        "word": "insecurities",
+        "translation": "不安全感，自卑",
+        "exampleEn": "The 1st thing that I think every woman should keep private. And I stand by this, is your <em>insecurities</em>.",
+        "exampleZh": "我认为每个女人都应该保守的第一件事。而我坚持这一点，就是你的不安全感。"
+      },
+      {
+        "word": "self-conscious about",
+        "translation": "对…感到不安/在意",
+        "exampleEn": "Everyone has things that they are <em>self-conscious about</em> or feel like they're not good at or wish something about them would change.",
+        "exampleZh": "每个人都有让自己感到不安的事情，或者觉得自己做不好的地方，或者希望自己能改变某些方面。"
+      },
+      {
+        "word": "identity",
+        "translation": "身份，认同感",
+        "exampleEn": "You have unconsciously, given them instructions on what to associate with you and your <em>identity</em>, right?",
+        "exampleZh": "你在不知不觉中，已经给他们发出了信号，让他们将你和你所认同的身份联系在一起，对吧？"
+      },
+      {
+        "word": "crooked",
+        "translation": "歪斜的，不整齐的",
+        "exampleEn": "Like, if you're insecure that you think you have a big forehead or you're insecure that your teeth are <em>crooked</em> or you have a weird smile.",
+        "exampleZh": "比如，如果你因为觉得自己额头太大而不自信，或者因为牙齿不整齐而自卑，或者觉得自己笑容很奇怪。"
+      },
+      {
+        "word": "better off",
+        "translation": "处境更好，更幸福",
+        "exampleEn": "And we are always <em>better off</em>. We are more likely to be successful and just happier and better off.",
+        "exampleZh": "而且我们的处境总会更好。我们更有可能获得成功，也更快乐、更幸福。"
+      },
+      {
+        "word": "worse off",
+        "translation": "处境更糟",
+        "exampleEn": "You are making them associate you with that label, which they've probably never done before, which just makes you <em>worse off</em>.",
+        "exampleZh": "你是在让他们把你和那个标签联系起来，而他们以前可能从来没有这样想过，这只会让你的处境更糟。"
+      },
+      {
+        "word": "solidify",
+        "translation": "巩固，使固化",
+        "exampleEn": "And the more you repeat those insecurities to yourself or to others over and over again, the more you <em>solidify</em> that into your identity.",
+        "exampleZh": "你越是反复向自己或他人提及那些不安全感，就越会将其固化为你的身份认同。"
+      },
+      {
+        "word": "terrible with",
+        "translation": "很不擅长（某事）",
+        "exampleEn": "So if every week I'm saying, I'm so <em>terrible with</em> money.",
+        "exampleZh": "所以如果我每周都在说，我太不擅长理财了。"
+      },
+      {
+        "word": "sabotaging",
+        "translation": "暗中破坏，自我毁灭",
+        "exampleEn": "I'm always <em>sabotaging</em> my relationships.",
+        "exampleZh": "我总是破坏自己的人际关系。"
+      },
+      {
+        "word": "be discerning about",
+        "translation": "对…审慎选择/有辨别力",
+        "exampleEn": "So <em>be discerning about</em> which stories you choose to share out loud.",
+        "exampleZh": "所以要谨慎选择你愿意大声分享出去的故事。"
+      },
+      {
+        "word": "resurfacing",
+        "translation": "重新浮现，再次出现",
+        "exampleEn": "Old insecurities that keep <em>resurfacing</em> or trying to move past mental blocks.",
+        "exampleZh": "旧的不安全感不断浮现，或者试图克服过去的心理障碍。"
+      },
+      {
+        "word": "past mental blocks",
+        "translation": "克服心理障碍",
+        "exampleEn": "Old insecurities that keep resurfacing or trying to move <em>past mental blocks</em>.",
+        "exampleZh": "旧的不安全感不断浮现，或者试图克服过去的心理障碍。"
+      },
+      {
+        "word": "in your corner",
+        "translation": "支持你，站在你这边",
+        "exampleEn": "Having someone <em>in your corner</em> can make a huge difference.",
+        "exampleZh": "有一个支持你的人会带来巨大的改变。"
+      },
+      {
+        "word": "outside perspective",
+        "translation": "外部视角，旁观者角度",
+        "exampleEn": "And sometimes just having an <em>outside perspective</em> can help you get out of your own head and see things in a new life.",
+        "exampleZh": "有时候，仅仅是一个外部的视角就能帮助你走出自己的思维定式，以全新的方式看待事物。"
+      },
+      {
+        "word": "commuting",
+        "translation": "通勤，上下班路程",
+        "exampleEn": "No waiting rooms, no <em>commuting</em>, just professional support from home on your own schedule.",
+        "exampleZh": "没有候诊室，不用通勤，只需按照自己的时间安排在家即可获得专业支持。"
+      },
+      {
+        "word": "nuptial",
+        "translation": "婚姻的，婚礼的",
+        "exampleEn": "Or maybe you're just in your <em>nuptial</em> phase. And so you're getting angry about the littlest things and you want to vent every single time to your friend.",
+        "exampleZh": "又或者你只是处在新婚阶段。所以你会因为最小的事情生气，每次都想向朋友倾诉。"
+      },
+      {
+        "word": "pick up the slack",
+        "translation": "接手别人的工作，补上不足",
+        "exampleEn": "You're not talking about that time when he really picked up the slack when you needed it.",
+        "exampleZh": "你不会去谈论他真正在你需要时挺身而出的那些时刻。"
+      },
+      {
+        "word": "hiccups",
+        "translation": "小挫折，小问题",
+        "exampleEn": "Like everyone has some <em>hiccups</em> or makes mistakes or has weird moments here and there.",
+        "exampleZh": "就像每个人都会有些小波折，犯些错误，或者时不时有些奇怪的时刻。"
+      },
+      {
+        "word": "caveat",
+        "translation": "注意事项，附带条件",
+        "exampleEn": "But I have a very important <em>caveat</em> here that you need to hear.",
+        "exampleZh": "但我这里有一个非常重要的注意事项，你需要听一听。"
+      },
+      {
+        "word": "discernment",
+        "translation": "辨别力，判断力",
+        "exampleEn": "Okay, so most of the time, having privacy and <em>discernment</em> around your finances is a very good thing and is usually the move.",
+        "exampleZh": "好的，所以在大多数时候，对你的财务状况保持隐私和审慎态度是非常好的做法，通常也是正确的选择。"
+      },
+      {
+        "word": "portfolio",
+        "translation": "投资组合，资产组合",
+        "exampleEn": "Like, you don't need to share how much money you're making when you meet a new friend or about your investment <em>portfolio</em> or how many revenue streams you have.",
+        "exampleZh": "比如，你不需要在结交新朋友时透露自己赚多少钱，也不需要分享你的投资组合或者有多少收入来源。"
+      },
+      {
+        "word": "lowball",
+        "translation": "故意压低（报价/估价）",
+        "exampleEn": "Comparing real financial numbers with a woman who you know knows what they're talking about so you don't get <em>lowball</em>ed.",
+        "exampleZh": "和一个你确信懂行的女性比较真实的财务数据，这样你就不会被压低报价。"
+      },
+      {
+        "word": "mastermind",
+        "translation": "智囊团，策划小组",
+        "exampleEn": "For example, I just joined this women's only business <em>mastermind</em> thing this year, and I've never done anything like that.",
+        "exampleZh": "例如，我今年刚加入了一个仅限女性的商业智囊团，我以前从来没有做过类似的事情。"
+      }
     ]
   }
-];
+]];
 
 var currentFolder = null;
 var cards = [];
