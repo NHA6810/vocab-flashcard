@@ -466,6 +466,40 @@
   }
   .sync-btn:hover { transform: scale(1.02); }
   .sync-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .reset-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: .9rem;
+    border: 1px solid #e74c3c;
+    border-radius: 10px;
+    background: rgba(231,76,60,.1);
+    color: #e74c3c;
+    cursor: pointer;
+    transition: all .15s;
+    margin-top: 8px;
+  }
+  .reset-btn:hover { background: rgba(231,76,60,.25); }
+  .delete-card-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(231,76,60,.15);
+    color: #e74c3c;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(231,76,60,.3);
+  }
+  .delete-card-btn:hover {
+    background: rgba(231,76,60,.35);
+    border-color: #e74c3c;
+    transform: scale(1.1);
+  }
+  .delete-card-btn:active { transform: scale(.9); }
   .settings-hint {
     font-size: .8rem;
     color: #666;
@@ -549,6 +583,7 @@
   <div class="hint" id="hint"></div>
   <div class="nav-arrows">
     <button class="nav-arrow" id="prev-btn" onclick="goBack()" title="上一个">◀</button>
+    <button class="delete-card-btn" onclick="deleteCurrentCard()" title="删除此卡片">🗑️</button>
     <button class="nav-arrow" id="next-btn" onclick="skipForward()" title="下一个">▶</button>
   </div>
 </div>
@@ -1104,6 +1139,68 @@ function loadFromStorage() {
   }
 }
 
+function saveOriginalState() {
+  try {
+    if (!localStorage.getItem('flashcard_original')) {
+      var orig = folders.map(function(f) { return { name: f.name, cards: f.cards.map(function(c) { return { word: c.word, translation: c.translation, exampleEn: c.exampleEn, exampleZh: c.exampleZh }; }) }; });
+      localStorage.setItem('flashcard_original', JSON.stringify(orig));
+    }
+  } catch(e) { console.error('Save original state failed:', e); }
+}
+
+function deleteCurrentCard() {
+  if (cards.length === 0) return;
+  var card = queue[currentIndex];
+  if (!confirm('确定删除「' + card.word + '」吗？')) return;
+  
+  // Remove from the folder's cards array
+  var folderCards = folders[currentFolder].cards;
+  for (var i = 0; i < folderCards.length; i++) {
+    if (folderCards[i].word === card.word && folderCards[i].translation === card.translation) {
+      folderCards.splice(i, 1);
+      break;
+    }
+  }
+  
+  // Remove from queue
+  queue.splice(currentIndex, 1);
+  total = queue.length;
+  
+  if (total === 0) {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('end-screen').style.display = 'block';
+    document.getElementById('finished-count').textContent = '0';
+  } else if (currentIndex >= total) {
+    currentIndex = total - 1;
+    displayWord();
+  } else {
+    displayWord();
+  }
+  
+  saveToStorage();
+  updateFolderCounts();
+}
+
+function resetFolder(idx) {
+  if (!confirm('确定要重置「' + folders[idx].name + '」吗？\n所有上传添加的词组将被删除，此操作不可撤销。')) return;
+  
+  try {
+    var orig = JSON.parse(localStorage.getItem('flashcard_original'));
+    if (orig && orig[idx]) {
+      folders[idx].cards = orig[idx].cards.map(function(c) {
+        return { word: c.word, translation: c.translation, exampleEn: c.exampleEn, exampleZh: c.exampleZh };
+      });
+      saveToStorage();
+      updateFolderCounts();
+      alert('✅「' + folders[idx].name + '」已重置，恢复到 ' + folders[idx].cards.length + ' 个词组');
+    } else {
+      alert('未找到原始数据，无法重置');
+    }
+  } catch(e) {
+    alert('重置失败: ' + e.message);
+  }
+}
+
 // ---- GitHub Sync ----
 function openSettings() {
   document.getElementById('settings-overlay').style.display = 'flex';
@@ -1191,6 +1288,7 @@ function syncToGitHub() {
 
 // Load from storage on page load
 document.addEventListener('DOMContentLoaded', function() {
+  saveOriginalState();
   loadFromStorage();
 });
 
@@ -1420,7 +1518,7 @@ document.addEventListener('click', function(e) {
     return;
   }
   // Don't trigger on folder cards, inputs, or other interactive elements
-  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn') || e.target.closest('.nav-arrow') || e.target.closest('.upload-btn') || e.target.closest('.settings-icon-btn') || e.target.closest('#settings-overlay')) {
+  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn') || e.target.closest('.nav-arrow') || e.target.closest('.upload-btn') || e.target.closest('.settings-icon-btn') || e.target.closest('#settings-overlay') || e.target.closest('.delete-card-btn')) {
     return;
   }
   handleUserAction();
@@ -1437,6 +1535,12 @@ document.addEventListener('click', function(e) {
       <input type="password" id="github-pat-input" placeholder="ghp_xxxx..." class="settings-input">
       <button id="sync-btn" class="sync-btn" onclick="syncToGitHub()">🔄 同步到 GitHub</button>
       <p class="settings-hint">上传词组后点击同步，数据将永久保存到 GitHub 仓库。<br>PAT 仅保存在本地浏览器，不会发送到除 GitHub 以外的地方。</p>
+    </div>
+    <div class="settings-section">
+      <label>重置文件夹（删除所有上传的词组）</label>
+      <button class="reset-btn" onclick="resetFolder(0)">🗑️ 重置「YouTube 生字和词组」</button>
+      <button class="reset-btn" onclick="resetFolder(1)">🗑️ 重置「每日英语听力生词和词组」</button>
+      <p class="settings-hint">重置将删除所有通过上传添加的词组，恢复到初始状态。此操作不可撤销。</p>
     </div>
     <button class="settings-close-btn" onclick="closeSettings()">关闭</button>
   </div>
