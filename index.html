@@ -392,6 +392,101 @@
     color: #eee;
   }
 
+  /* --- Settings Panel --- */
+  .settings-icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    vertical-align: middle;
+    opacity: .6;
+    transition: opacity .2s;
+  }
+  .settings-icon-btn:hover { opacity: 1; }
+  #settings-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .settings-panel {
+    background: #16213e;
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 8px 40px rgba(0,0,0,.5);
+  }
+  .settings-panel h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .settings-section {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  .settings-section label {
+    display: block;
+    font-size: .9rem;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+  .settings-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #1a1a2e;
+    color: #eee;
+    margin-bottom: 12px;
+  }
+  .settings-input:focus {
+    outline: none;
+    border-color: #7b2ff7;
+  }
+  .sync-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: .95rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    color: #fff;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .sync-btn:hover { transform: scale(1.02); }
+  .sync-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .settings-hint {
+    font-size: .8rem;
+    color: #666;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  .settings-close-btn {
+    padding: 8px 24px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 20px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .settings-close-btn:hover {
+    border-color: #7b2ff7;
+    color: #eee;
+  }
+
   @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
@@ -400,7 +495,7 @@
 <!-- Folder Screen -->
 <div id="folder-screen">
   <h1>📚 词汇闪卡练习</h1>
-  <p>请选择词组文件夹</p>
+  <p>请选择词组文件夹 <button class="settings-icon-btn" onclick="openSettings()" title="设置">⚙️</button></p>
   <div class="folder-list">
     <div class="folder-card">
       <div class="folder-icon" onclick="selectFolder(0)">📁</div>
@@ -888,24 +983,42 @@ function handleUpload(event) {
         return;
       }
 
-      // Try to identify columns from header row
+      // Try to identify columns from header row (check longer patterns first!)
+      // Handles duplicate headers: first "中文翻译" = word translation, second = example Chinese
       var header = rows[0];
       var colMap = { word: -1, translation: -1, exampleEn: -1, exampleZh: -1 };
 
       for (var i = 0; i < header.length; i++) {
         var h = String(header[i]).toLowerCase().trim();
-        if (h === 'word' || h === '英文' || h === '单词' || h === '词组') colMap.word = i;
-        else if (h === 'translation' || h === '中文' || h === '翻译') colMap.translation = i;
-        else if (h === 'exampleen' || h === '英文例句' || h === '例句') colMap.exampleEn = i;
-        else if (h === 'examplezh' || h === '中文例句' || h === '中文翻译') colMap.exampleZh = i;
+        if (h === 'word' || h === '英文' || h === '单词' || h === '词组') {
+          colMap.word = i;
+        } else if (h === '英文例句' || h === '例句' || h === 'exampleen' || h === 'example') {
+          if (colMap.exampleEn === -1) colMap.exampleEn = i;
+        } else if (h === '中文翻译' || h === '中文释义') {
+          // Could be word translation or example Chinese - disambiguate by checking previous column
+          if (colMap.exampleEn !== -1) {
+            // English example already found → this is the Chinese example translation
+            colMap.exampleZh = i;
+          } else if (colMap.exampleZh !== -1) {
+            // Already have exampleZh → this must be word translation
+            colMap.translation = i;
+          } else {
+            // No example yet → assume this is word translation
+            colMap.translation = i;
+          }
+        } else if (h === '中文例句' || h === 'examplezh') {
+          colMap.exampleZh = i;
+        } else if (h === 'translation' || h === '中文' || h === '翻译') {
+          colMap.translation = i;
+        }
       }
 
-      // Fallback: if header not recognized, assume order: word, translation, exampleEn, exampleZh
+      // Fallback: if header not recognized, try to detect by position
       if (colMap.word === -1) {
         colMap.word = 0;
-        colMap.translation = 1;
-        colMap.exampleEn = 2;
-        colMap.exampleZh = 3;
+        colMap.translation = (header.length >= 2) ? 1 : -1;
+        colMap.exampleEn = (header.length >= 3) ? 2 : -1;
+        colMap.exampleZh = (header.length >= 4) ? 3 : -1;
       }
 
       var added = 0;
@@ -936,6 +1049,7 @@ function handleUpload(event) {
 
       if (added > 0) {
         updateFolderCounts();
+        saveToStorage();
         alert('✅ 成功添加 ' + added + ' 个词组到「' + folders[folderIdx].name + '」！');
       } else {
         alert('⚠️ 未找到有效词组数据，请检查 Excel 格式。');
@@ -955,6 +1069,130 @@ function updateFolderCounts() {
     }
   }
 }
+
+// ---- LocalStorage Persistence ----
+function saveToStorage() {
+  try {
+    var saveData = folders.map(function(f) { return { name: f.name, cards: f.cards }; });
+    localStorage.setItem('flashcard_folders', JSON.stringify(saveData));
+  } catch(e) {
+    console.error('Save to localStorage failed:', e);
+  }
+}
+
+function loadFromStorage() {
+  try {
+    var saved = localStorage.getItem('flashcard_folders');
+    if (saved) {
+      var data = JSON.parse(saved);
+      if (data && data.length === folders.length) {
+        var totalAdded = 0;
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].cards && data[i].cards.length > folders[i].cards.length) {
+            folders[i].cards = data[i].cards;
+            totalAdded += data[i].cards.length - folders[i].cards.length;
+          }
+        }
+        updateFolderCounts();
+        if (totalAdded > 0) {
+          console.log('从本地存储恢复了 ' + totalAdded + ' 个词组');
+        }
+      }
+    }
+  } catch(e) {
+    console.error('Load from localStorage failed:', e);
+  }
+}
+
+// ---- GitHub Sync ----
+function openSettings() {
+  document.getElementById('settings-overlay').style.display = 'flex';
+  var savedPat = localStorage.getItem('flashcard_github_pat') || '';
+  document.getElementById('github-pat-input').value = savedPat;
+}
+
+function closeSettings() {
+  document.getElementById('settings-overlay').style.display = 'none';
+}
+
+function syncToGitHub() {
+  var pat = document.getElementById('github-pat-input').value.trim();
+  if (!pat) {
+    alert('请输入 GitHub Personal Access Token');
+    return;
+  }
+
+  localStorage.setItem('flashcard_github_pat', pat);
+  var btn = document.getElementById('sync-btn');
+  btn.textContent = '同步中...';
+  btn.disabled = true;
+
+  // Step 1: Get current file SHA from GitHub
+  fetch('https://api.github.com/repos/NHA6810/vocab-flashcard/contents/index.html', {
+    headers: { 'Authorization': 'token ' + pat }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(fileData) {
+    if (!fileData.sha) {
+      throw new Error('无法读取 GitHub 文件: ' + (fileData.message || '未知错误'));
+    }
+    var sha = fileData.sha;
+
+    // Step 2: Fetch current file content
+    return fetch('https://raw.githubusercontent.com/NHA6810/vocab-flashcard/main/index.html?t=' + Date.now())
+      .then(function(r) { return r.text(); })
+      .then(function(html) {
+        return { sha: sha, html: html };
+      });
+  })
+  .then(function(result) {
+    var sha = result.sha;
+    var html = result.html;
+
+    // Step 3: Replace folders data in HTML
+    var foldersJSON = JSON.stringify(folders, null, 2);
+    var newHTML = html.replace(
+      /var folders = \[[\s\S]*?\];[\r\n\s]*var currentFolder/,
+      'var folders = ' + foldersJSON + '];\n\nvar currentFolder'
+    );
+
+    // Step 4: Encode and push to GitHub
+    var encoded = btoa(unescape(encodeURIComponent(newHTML)));
+
+    return fetch('https://api.github.com/repos/NHA6810/vocab-flashcard/contents/index.html', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + pat,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Sync flashcard data via browser upload',
+        content: encoded,
+        sha: sha
+      })
+    });
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    btn.textContent = '✅ 同步成功';
+    btn.disabled = false;
+    setTimeout(function() { btn.textContent = '🔄 同步到 GitHub'; }, 3000);
+    if (!result.sha && result.message) {
+      alert('同步失败: ' + result.message);
+    }
+  })
+  .catch(function(err) {
+    btn.textContent = '🔄 同步到 GitHub';
+    btn.disabled = false;
+    alert('同步失败: ' + err.message);
+  });
+}
+
+// Load from storage on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadFromStorage();
+});
 
 // 语音朗读函数
 function speakEnglish(text, speedArray, onComplete) {
@@ -1182,12 +1420,27 @@ document.addEventListener('click', function(e) {
     return;
   }
   // Don't trigger on folder cards, inputs, or other interactive elements
-  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn') || e.target.closest('.nav-arrow') || e.target.closest('.upload-btn')) {
+  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn') || e.target.closest('.nav-arrow') || e.target.closest('.upload-btn') || e.target.closest('.settings-icon-btn') || e.target.closest('#settings-overlay')) {
     return;
   }
   handleUserAction();
 });
 
 </script>
+
+<!-- Settings Overlay -->
+<div id="settings-overlay">
+  <div class="settings-panel">
+    <h3>⚙️ 设置</h3>
+    <div class="settings-section">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="github-pat-input" placeholder="ghp_xxxx..." class="settings-input">
+      <button id="sync-btn" class="sync-btn" onclick="syncToGitHub()">🔄 同步到 GitHub</button>
+      <p class="settings-hint">上传词组后点击同步，数据将永久保存到 GitHub 仓库。<br>PAT 仅保存在本地浏览器，不会发送到除 GitHub 以外的地方。</p>
+    </div>
+    <button class="settings-close-btn" onclick="closeSettings()">关闭</button>
+  </div>
+</div>
+
 </body>
 </html>
