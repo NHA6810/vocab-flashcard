@@ -1783,6 +1783,8 @@ function updateHint() {
     hint.innerHTML = '📖 按 <kbd>空格</kbd> 或点击屏幕朗读例句';
   } else if (state === 'read_example') {
     hint.innerHTML = '🔊 正在朗读例句...';
+  } else if (state === 'waiting_next') {
+    hint.innerHTML = '👆 按 <kbd>空格</kbd> 或点击屏幕进入下一个词组';
   }
 }
 
@@ -1873,11 +1875,12 @@ function handleUserAction() {
     updateHint();
     var exampleText = queue[currentIndex].exampleEn;
     speakEnglish(exampleText, [0.75, 1.0], function() {
-      setTimeout(function() {
-        goToNextWord();
-      }, 800);
+      state = 'waiting_next';
+      updateHint();
     });
     
+  } else if (state === 'waiting_next') {
+    goToNextWord();
   } else if (state === 'read_word' || state === 'read_example') {
     console.log('正在朗读，忽略操作');
   }
