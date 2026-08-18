@@ -1041,6 +1041,18 @@ var folders = [
         "translation": "个性化的，有人情味的",
         "exampleEn": "But it's not very <em>personalized</em>, and I want to get out there in the world.",
         "exampleZh": "但那样的报道缺乏人情味，我想走到公众面前。"
+      },
+      {
+        "word": "cuckoo",
+        "translation": "疯狂的；精神失常的",
+        "exampleEn": "They're <em>cuckoo</em>.",
+        "exampleZh": "他们疯了。"
+      },
+      {
+        "word": "ceasefire",
+        "translation": "停火，停战",
+        "exampleEn": "They have agreed to a <em>ceasefire</em> after three years of conflict…",
+        "exampleZh": "经过3年的冲突，他们已经同意停火。"
       }
     ]
   },
@@ -1576,68 +1588,6 @@ function syncToGitHub() {
   });
 }
 
-
-// Pull latest data from GitHub and update localStorage + page
-function pullFromGitHub() {
-  var pat = document.getElementById('github-pat-input').value.trim();
-  if (!pat) {
-    alert('请先输入 GitHub Personal Access Token');
-    return;
-  }
-  localStorage.setItem('flashcard_github_pat', pat);
-  var btn = document.getElementById('pull-btn');
-  btn.textContent = '拉取中...';
-  btn.disabled = true;
-
-  fetch('https://api.github.com/repos/NHA6810/vocab-flashcard/contents/index.html', {
-    headers: { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github.v3+json' }
-  })
-  .then(function(r) {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
-  })
-  .then(function(data) {
-    if (!data.content) throw new Error(data.message || '无法读取文件');
-    var html = decodeURIComponent(escape(atob(data.content)));
-    
-    // Extract folders data from HTML
-    var match = html.match(/var folders = (\[[\s\S]*?\]);\s*\n\/\/ __FOLDERS_DATA_END__/);
-    if (!match) throw new Error('未在文件中找到词组数据');
-    
-    var pulledFolders = JSON.parse(match[1]);
-    var totalCards = pulledFolders.reduce(function(sum, f) { return sum + f.cards.length; }, 0);
-    
-    // Update localStorage
-    localStorage.setItem('flashcard_folders', JSON.stringify(pulledFolders));
-    
-    // Update current page data
-    folders = pulledFolders;
-    
-    // Refresh the folder list view
-    btn.textContent = '✅ 拉取成功 (' + pulledFolders.length + '个文件夹, ' + totalCards + '张卡片)';
-    setTimeout(function() {
-      btn.textContent = '📥 从 GitHub 拉取';
-      btn.disabled = false;
-    }, 3000);
-    
-    // Go back to home view to show updated data
-    showHomePage();
-    alert('拉取成功！\n\n' + pulledFolders.map(function(f) {
-      return f.name + ': ' + f.cards.length + ' 张卡片';
-    }).join('\n'));
-  })
-  .catch(function(err) {
-    btn.textContent = '📥 从 GitHub 拉取';
-    btn.disabled = false;
-    alert('拉取失败: ' + err.message);
-  });
-}
-
-// Helper: reload page to show updated data
-function showHomePage() {
-  location.reload();
-}
-
 // Load from storage on page load
 document.addEventListener('DOMContentLoaded', function() {
   saveOriginalState();
@@ -1886,7 +1836,6 @@ document.addEventListener('click', function(e) {
       <label>GitHub Personal Access Token</label>
       <input type="password" id="github-pat-input" placeholder="ghp_xxxx..." class="settings-input">
       <button id="sync-btn" class="sync-btn" onclick="syncToGitHub()">🔄 同步到 GitHub</button>
-      <button id="pull-btn" onclick="pullFromGitHub()" style="margin-left:10px;background:#17a2b8;">📥 从 GitHub 拉取</button>
       <p class="settings-hint">上传词组后点击同步，数据将永久保存到 GitHub 仓库。<br>PAT 仅保存在本地浏览器，不会发送到除 GitHub 以外的地方。</p>
     </div>
     <div class="settings-section">
