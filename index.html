@@ -1,2 +1,1840 @@
-429: Too Many Requests
-For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>词汇闪卡练习</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Microsoft YaHei", sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  /* --- Folder Screen --- */
+  #folder-screen {
+    text-align: center;
+    animation: fadeIn .5s ease;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+  }
+  #folder-screen h1 {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #folder-screen p {
+    font-size: 1rem;
+    color: #aaa;
+    margin-bottom: 32px;
+  }
+  .folder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .folder-card {
+    background: #16213e;
+    border-radius: 16px;
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: all .25s ease;
+    border: 1px solid rgba(255,255,255,.06);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-align: left;
+    box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  }
+  .folder-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(123,47,247,.3);
+    border-color: rgba(123,47,247,.4);
+  }
+  .folder-card:active {
+    transform: scale(.97);
+  }
+  .folder-icon {
+    font-size: 2.8rem;
+    flex-shrink: 0;
+  }
+  .folder-info {
+    flex: 1;
+  }
+  .folder-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #eee;
+    margin-bottom: 4px;
+  }
+  .folder-count {
+    font-size: .9rem;
+    color: #888;
+  }
+  .upload-btn {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(123,47,247,.2);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(123,47,247,.3);
+  }
+  .upload-btn:hover {
+    background: rgba(123,47,247,.4);
+    border-color: rgba(123,47,247,.6);
+    transform: scale(1.08);
+  }
+  .upload-btn:active {
+    transform: scale(.95);
+  }
+
+  /* --- Start Screen --- */
+  #start-screen {
+    display: none;
+    text-align: center;
+    animation: fadeIn .5s ease;
+  }
+  #start-screen h1 {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #start-screen p {
+    font-size: 1rem;
+    color: #aaa;
+    margin-bottom: 36px;
+    line-height: 1.8;
+  }
+  #start-btn {
+    padding: 14px 56px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    color: #fff;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 24px rgba(123,47,247,.4);
+  }
+  #start-btn:hover { transform: scale(1.05); box-shadow: 0 6px 32px rgba(123,47,247,.6); }
+  #start-btn:active { transform: scale(.97); }
+  .back-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 8px 24px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 20px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .back-btn:hover {
+    border-color: #7b2ff7;
+    color: #eee;
+  }
+
+  /* --- Quiz Screen --- */
+  #quiz-screen {
+    display: none;
+    text-align: center;
+    width: 90%;
+    max-width: 760px;
+    animation: fadeIn .4s ease;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+    border-radius: 3px;
+    transition: width .4s ease;
+  }
+
+  .counter {
+    font-size: .9rem;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .jump-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .jump-section label {
+    font-size: .85rem;
+    color: #aaa;
+  }
+  .jump-input {
+    width: 60px;
+    padding: 6px 10px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background: #1a1a2e;
+    color: #eee;
+    text-align: center;
+  }
+  .jump-input:focus {
+    outline: none;
+    border-color: #7b2ff7;
+  }
+  .jump-btn {
+    padding: 6px 14px;
+    font-size: .85rem;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    color: #fff;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .jump-btn:hover {
+    transform: scale(1.05);
+  }
+  .jump-btn:active {
+    transform: scale(.95);
+  }
+
+  .word-card {
+    background: #16213e;
+    border-radius: 18px;
+    padding: 48px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all .3s ease;
+  }
+
+  .word-text {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .translation {
+    font-size: 1.3rem;
+    color: #ccc;
+    margin-top: 4px;
+  }
+
+  .example-section {
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all .4s ease;
+    max-height: 0;
+    overflow: hidden;
+  }
+  .example-section.show {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 400px;
+  }
+
+  .example-en {
+    font-size: 1.05rem;
+    color: #b0c4de;
+    line-height: 1.7;
+    margin-bottom: 10px;
+    padding: 14px 20px;
+    background: rgba(255,255,255,.04);
+    border-radius: 10px;
+    border-left: 3px solid #7b2ff7;
+  }
+  .example-en em {
+    color: #00d2ff;
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .example-zh {
+    font-size: .95rem;
+    color: #999;
+    line-height: 1.6;
+  }
+
+  .hint {
+    margin-top: 24px;
+    font-size: .85rem;
+    color: #666;
+    height: 24px;
+  }
+  .hint kbd {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    background: #333;
+    border: 1px solid #555;
+    font-family: monospace;
+    color: #ccc;
+    font-size: .85rem;
+  }
+
+  .nav-arrows {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin-top: 20px;
+  }
+  .nav-arrow {
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 50%;
+    background: #16213e;
+    color: #aaa;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #333;
+  }
+  .nav-arrow:hover {
+    background: #1a2744;
+    color: #00d2ff;
+    border-color: #00d2ff;
+    transform: scale(1.1);
+  }
+  .nav-arrow:active {
+    transform: scale(.95);
+  }
+  .nav-arrow:disabled {
+    opacity: .3;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .nav-arrow:disabled:hover {
+    background: #16213e;
+    color: #aaa;
+    border-color: #333;
+  }
+
+  /* --- End Screen --- */
+  #end-screen {
+    display: none;
+    text-align: center;
+    animation: fadeIn .5s ease;
+  }
+  #end-screen h2 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #end-screen p { color: #aaa; margin-bottom: 28px; font-size: 1.05rem; }
+  #restart-btn {
+    padding: 12px 48px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    color: #fff;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  #restart-btn:hover { transform: scale(1.05); }
+  #folder-btn {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 24px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 20px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  #folder-btn:hover {
+    border-color: #7b2ff7;
+    color: #eee;
+  }
+
+  /* --- Settings Panel --- */
+  .settings-icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    vertical-align: middle;
+    opacity: .6;
+    transition: opacity .2s;
+  }
+  .settings-icon-btn:hover { opacity: 1; }
+  #settings-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .settings-panel {
+    background: #16213e;
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 8px 40px rgba(0,0,0,.5);
+  }
+  .settings-panel h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .settings-section {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  .settings-section label {
+    display: block;
+    font-size: .9rem;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+  .settings-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #1a1a2e;
+    color: #eee;
+    margin-bottom: 12px;
+  }
+  .settings-input:focus {
+    outline: none;
+    border-color: #7b2ff7;
+  }
+  .sync-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: .95rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+    color: #fff;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .sync-btn:hover { transform: scale(1.02); }
+  .sync-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .reset-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: .9rem;
+    border: 1px solid #e74c3c;
+    border-radius: 10px;
+    background: rgba(231,76,60,.1);
+    color: #e74c3c;
+    cursor: pointer;
+    transition: all .15s;
+    margin-top: 8px;
+  }
+  .reset-btn:hover { background: rgba(231,76,60,.25); }
+  .delete-card-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(231,76,60,.15);
+    color: #e74c3c;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(231,76,60,.3);
+  }
+  .delete-card-btn:hover {
+    background: rgba(231,76,60,.35);
+    border-color: #e74c3c;
+    transform: scale(1.1);
+  }
+  .delete-card-btn:active { transform: scale(.9); }
+  .settings-hint {
+    font-size: .8rem;
+    color: #666;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  .settings-close-btn {
+    padding: 8px 24px;
+    font-size: .9rem;
+    border: 1px solid #444;
+    border-radius: 20px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .settings-close-btn:hover {
+    border-color: #7b2ff7;
+    color: #eee;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- Folder Screen -->
+<div id="folder-screen">
+  <h1>📚 词汇闪卡练习</h1>
+  <p>请选择词组文件夹 <button class="settings-icon-btn" onclick="openSettings()" title="设置">⚙️</button></p>
+  <div class="folder-list">
+    <div class="folder-card" onclick="selectFolder(0)">
+      <div class="folder-icon">📁</div>
+      <div class="folder-info">
+        <div class="folder-name">YouTube 生字和词组</div>
+        <div class="folder-count" id="folder-count-0">31 个词组</div>
+      </div>
+      <button class="upload-btn" onclick="event.stopPropagation(); triggerUpload(0);" title="上传Excel补充词组">📤</button>
+    </div>
+    <div class="folder-card" onclick="selectFolder(1)">
+      <div class="folder-icon">📁</div>
+      <div class="folder-info">
+        <div class="folder-name">每日英语听力生词和词组</div>
+        <div class="folder-count" id="folder-count-1">26 个词组</div>
+      </div>
+      <button class="upload-btn" onclick="event.stopPropagation(); triggerUpload(1);" title="上传Excel补充词组">📤</button>
+    </div>
+  </div>
+  <input type="file" id="upload-input" accept=".xlsx,.xls" style="display:none" onchange="handleUpload(event)">
+</div>
+
+<!-- Start Screen -->
+<div id="start-screen">
+  <h1 id="folder-title">📖 词汇闪卡练习</h1>
+  <p>共 <span id="total-count">0</span> 个词组，随机出题<br>
+     先试着说出意思，按 <kbd>空格</kbd> 看例句<br>
+     再按 <kbd>空格</kbd> 进入下一个</p>
+  <button id="start-btn" onclick="startQuiz()">开始练习</button>
+  <br>
+  <button class="back-btn" onclick="goToFolderScreen()">← 返回选择文件夹</button>
+</div>
+
+<!-- Quiz Screen -->
+<div id="quiz-screen">
+  <button class="back-btn" onclick="goToFolderScreen()" style="margin-bottom:8px;">← 返回首页</button>
+  <div class="progress-bar"><div class="fill" id="progress-fill"></div></div>
+  <div class="counter" id="counter"></div>
+  <div class="jump-section">
+    <label>跳转到：</label>
+    <input type="number" class="jump-input" id="jump-input" min="1" placeholder="#">
+    <button class="jump-btn" onclick="jumpToWord()">跳转</button>
+  </div>
+  <div class="word-card" id="word-card">
+    <div class="word-text" id="word-text"></div>
+    <div class="translation" id="translation"></div>
+    <div class="example-section" id="example-section">
+      <div class="example-en" id="example-en"></div>
+      <div class="example-zh" id="example-zh"></div>
+    </div>
+  </div>
+  <div class="hint" id="hint"></div>
+  <div class="nav-arrows">
+    <button class="nav-arrow" id="prev-btn" onclick="goBack()" title="上一个">◀</button>
+    <button class="delete-card-btn" onclick="deleteCurrentCard()" title="删除此卡片">🗑️</button>
+    <button class="nav-arrow" id="next-btn" onclick="skipForward()" title="下一个">▶</button>
+  </div>
+</div>
+
+<!-- End Screen -->
+<div id="end-screen">
+  <h2>🎉 全部完成！</h2>
+  <p><span id="finished-count">0</span> 个词组已练习完毕</p>
+  <button id="restart-btn" onclick="restartQuiz()">再来一轮</button>
+  <br>
+  <button id="folder-btn" onclick="goToFolderScreen()">← 返回首页选择文件夹</button>
+</div>
+
+<script>
+// Dynamically load SheetJS so it doesn't block page rendering
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js';
+  s.async = true;
+  document.head.appendChild(s);
+})();
+
+// __FOLDERS_DATA_START__
+var folders = [
+  {
+    "name": "YouTube 生字和词组",
+    "cards": [
+      {
+        "word": "record-setting",
+        "translation": "创纪录的",
+        "exampleEn": "Analysis of the Pascal A nuclear test and its <em>record-setting</em> steel plate.",
+        "exampleZh": "帕斯卡A核试验及其创纪录的钢板分析。"
+      },
+      {
+        "word": "catastrophically",
+        "translation": "灾难性地",
+        "exampleEn": "The 1956 Pascal A nuclear test failed <em>catastrophically</em> due to a yield calculation error.",
+        "exampleZh": "1956年帕斯卡A核试验因当量计算错误而灾难性地失败了。"
+      },
+      {
+        "word": "yield calculation error",
+        "translation": "当量计算错误",
+        "exampleEn": "…failed catastrophically due to a <em>yield calculation error</em>.",
+        "exampleZh": "……因当量计算错误而灾难性地失败了。"
+      },
+      {
+        "word": "interstellar space",
+        "translation": "星际空间",
+        "exampleEn": "The plate could theoretically travel into <em>interstellar space</em>.",
+        "exampleZh": "该钢板理论上可以飞入星际空间。"
+      },
+      {
+        "word": "Test Setup & Objective",
+        "translation": "试验设置与目标",
+        "exampleEn": "<em>Test Setup & Objective</em>: The scientists dug a 150m deep, 1.2m diameter test shaft.",
+        "exampleZh": "试验设置与目标：科学家挖掘了一口150米深、直径1.2米的试验井。"
+      },
+      {
+        "word": "Projectile",
+        "translation": "抛射物；发射物",
+        "exampleEn": "The High-Speed <em>Projectile</em> — referring to the 900kg steel plate cover.",
+        "exampleZh": "高速抛射物——指的是900公斤的钢板盖。"
+      },
+      {
+        "word": "Planned yield",
+        "translation": "计划当量",
+        "exampleEn": "<em>Planned yield</em> was equivalent to 6kg of TNT.",
+        "exampleZh": "计划当量相当于6公斤TNT。"
+      },
+      {
+        "word": "threshold",
+        "translation": "阈值；临界值",
+        "exampleEn": "The plate's speed far exceeded this <em>threshold</em>.",
+        "exampleZh": "钢板的速度远远超过了这个阈值（太阳系逃逸速度16.7km/s）。"
+      },
+      {
+        "word": "intercontinental missiles",
+        "translation": "洲际导弹",
+        "exampleEn": "Faster than rockets or <em>intercontinental missiles</em>.",
+        "exampleZh": "比火箭或洲际导弹还要快。"
+      },
+      {
+        "word": "Record-setting speed, >194 Mach",
+        "translation": "创纪录的速度，超过194马赫",
+        "exampleEn": "Significance: <em>Record-setting speed, >194 Mach</em>.",
+        "exampleZh": "意义：创纪录的速度，超过194马赫。"
+      },
+      {
+        "word": "macroscopic object",
+        "translation": "宏观物体",
+        "exampleEn": "The fastest man-made <em>macroscopic object</em> in recorded human history.",
+        "exampleZh": "人类有记录以来最快的自制宏观物体。"
+      },
+      {
+        "word": "trigger a controlled",
+        "translation": "引发一次可控的…",
+        "exampleEn": "Planned to <em>trigger a controlled</em> underground nuclear explosion.",
+        "exampleZh": "计划引发一次可控的地下核爆炸。"
+      },
+      {
+        "word": "pre-set planned yield",
+        "translation": "预先设定的计划当量",
+        "exampleEn": "50,000 times the <em>pre-set planned yield</em> for the test.",
+        "exampleZh": "是试验预先设定的计划当量的5万倍。"
+      },
+      {
+        "word": "Shaft Transformation",
+        "translation": "竖井蜕变/转化",
+        "exampleEn": "<em>Shaft Transformation</em>: The massive energy instantly vaporized internal concrete structures.",
+        "exampleZh": "竖井蜕变：巨大的能量瞬间汽化了内部混凝土结构，把试验井变成了巨型发射炮筒。"
+      },
+      {
+        "word": "ejected",
+        "translation": "被弹射出的",
+        "exampleEn": "The high-speed camera only captured the <em>ejected</em> steel cover in a single frame.",
+        "exampleZh": "高速相机仅在一帧画面中捕捉到了被弹射出的钢盖。"
+      },
+      {
+        "word": "footage",
+        "translation": "影像；录像片段",
+        "exampleEn": "No continuous tracking <em>footage</em> available for reference.",
+        "exampleZh": "没有连续的跟踪影像可供参考。"
+      },
+      {
+        "word": "opening hook",
+        "translation": "开场钩子；开场引子",
+        "exampleEn": "It serves as the <em>opening hook</em> that frames the core topic of the entire sharing session.",
+        "exampleZh": "它充当了整个分享会的开场钩子，引出了核心话题。"
+      },
+      {
+        "word": "the core empirical data",
+        "translation": "核心实测数据",
+        "exampleEn": "It provides <em>the core empirical data</em> that supports the claim of the object being a speed record holder.",
+        "exampleZh": "它提供了支持该物体成为速度纪录保持者的核心实测数据。"
+      },
+      {
+        "word": "Core Technical Parameters",
+        "translation": "核心技术参数",
+        "exampleEn": "<em>Core Technical Parameters</em>",
+        "exampleZh": "核心技术参数"
+      },
+      {
+        "word": "Active Balancing System",
+        "translation": "主动平衡系统",
+        "exampleEn": "<em>Active Balancing System</em> ▪Hardware & Algorithm: Equipped with a steel reaction wheel running on a 200 Hz PID loop with dynamic balance point adjustment, all powered by an STM32 microcontroller. ▪Anti-Toppling Performance: Delivers fast, stable recovery from any lateral external force applied to the vehicle, eliminating the inherent toppling risk of traditional two-wheeled structures.",
+        "exampleZh": "主动平衡系统"
+      },
+      {
+        "word": "Autonomous Driving Module",
+        "translation": "自动驾驶模块",
+        "exampleEn": "<em>Autonomous Driving Module</em>: Adopts a stereo depth camera and lidar sensor to collect surrounding environment data, supporting the vehicle's stable autonomous driving operation logic.",
+        "exampleZh": "自动驾驶模块"
+      },
+      {
+        "word": "Project Positioning & Resource Disclosure",
+        "translation": "项目定位与资源公开",
+        "exampleEn": "<em>Project Positioning & Resource Disclosure</em>",
+        "exampleZh": "项目定位与资源公开"
+      },
+      {
+        "word": "Core Application Direction",
+        "translation": "核心应用方向",
+        "exampleEn": "<em>Core Application Direction</em> ▪Research Foundation Role: Serves as a dedicated foundational platform to lower the threshold for relevant teams to carry out autonomous two-wheeled vehicle research. ▪Long-Term Commercial Prospect: The team notes the technology can be further optimized to act as a high-efficiency solution for urban logistics and delivery scenarios.",
+        "exampleZh": "核心应用方向"
+      },
+      {
+        "word": "Open Source Resource Release",
+        "translation": "开源资源发布",
+        "exampleEn": "<em>Open Source Resource Release</em>: All core development resources including 3D CAD models, full source code and complete component lists are released for free public access.",
+        "exampleZh": "开源资源发布"
+      },
+      {
+        "word": "Project Initiation Background",
+        "translation": "项目启动背景",
+        "exampleEn": "<em>Project Initiation Background</em>",
+        "exampleZh": "项目启动背景"
+      },
+      {
+        "word": "Program Setting",
+        "translation": "项目设定",
+        "exampleEn": "<em>Program Setting</em>: The project was launched as a fully self-defined independent research program, with no predefined scope boundaries set for the entire development process.",
+        "exampleZh": "项目设定"
+      },
+      {
+        "word": "Supervision Support",
+        "translation": "指导支持",
+        "exampleEn": "<em>Supervision Support</em>: The independent research program is carried out under the guidance of instructor Victoria Preston from Owen College.",
+        "exampleZh": "指导支持"
+      },
+      {
+        "word": "Project Introduction",
+        "translation": "项目介绍",
+        "exampleEn": "<em>Project Introduction</em>: The presenters introduced the self-developed autonomous self-balancing bicycle project they completed as Owen freshmen.",
+        "exampleZh": "项目介绍"
+      },
+      {
+        "word": "Technical Implementation",
+        "translation": "技术实现",
+        "exampleEn": "<em>Technical Implementation</em>: The bicycle uses a steel reaction wheel with a 200 Hz PID loop running on STM32 for active balancing, and adopts a stereo depth camera and lidar sensor for autonomous driving.",
+        "exampleZh": "技术实现"
+      },
+      {
+        "word": "Project Attributes",
+        "translation": "项目属性",
+        "exampleEn": "<em>Project Attributes</em>: The project is designed as an open-source platform, with all relevant files including 3D CAD models, code and material lists publicly available online, originally initiated as an independent study research project.",
+        "exampleZh": "项目属性"
+      },
+      {
+        "word": "Application Prospect",
+        "translation": "应用前景",
+        "exampleEn": "<em>Application Prospect</em>: The project is positioned as a foundational research platform for autonomous two-wheeled vehicles, and can be applied to more efficient delivery scenarios in the future.",
+        "exampleZh": "应用前景"
+      },
+      {
+        "word": "deal with",
+        "translation": "处理；应对",
+        "exampleEn": "I don't wanna <em>deal with</em> them anymore.",
+        "exampleZh": "我不想再应付他们了。"
+      },
+      {
+        "word": "sick people",
+        "translation": "病态的人；有毛病的人",
+        "exampleEn": "There's <em>sick people</em>.",
+        "exampleZh": "那里有（一些）病态的人。"
+      },
+      {
+        "word": "led by",
+        "translation": "由……领导 / 被……带领",
+        "exampleEn": "They're <em>led by</em> sick people.",
+        "exampleZh": "他们被病态的人领导着。"
+      },
+      {
+        "word": "vicious",
+        "translation": "恶毒的；凶残的",
+        "exampleEn": "They're <em>vicious</em>, violent people.",
+        "exampleZh": "他们是恶毒、暴力的人。"
+      },
+      {
+        "word": "violent",
+        "translation": "暴力的；激烈的",
+        "exampleEn": "They're vicious, <em>violent</em> people.",
+        "exampleZh": "他们是恶毒、暴力的人。"
+      },
+      {
+        "word": "nuclear weapon",
+        "translation": "核武器",
+        "exampleEn": "If they had a <em>nuclear weapon</em>, they'd use it.",
+        "exampleZh": "如果他们有核武器，他们会使用它。"
+      },
+      {
+        "word": "as far as I'm concerned",
+        "translation": "就我而言；在我看来",
+        "exampleEn": "<em>as far as I'm concerned</em>, it's over.",
+        "exampleZh": "就我而言，这事结束了。"
+      },
+      {
+        "word": "negotiators",
+        "translation": "谈判代表；谈判人员",
+        "exampleEn": "I'll speak to our <em>negotiators</em>.",
+        "exampleZh": "我会和我们这边的谈判代表谈。"
+      },
+      {
+        "word": "wake up",
+        "translation": "醒醒；清醒点",
+        "exampleEn": "<em>wake up</em>, Jared Christian.",
+        "exampleZh": "醒醒吧，Jared Christian。"
+      },
+      {
+        "word": "waste of time",
+        "translation": "浪费时间",
+        "exampleEn": "It's just a <em>waste of time</em> dealing with them.",
+        "exampleZh": "和他们打交道纯粹是浪费时间。"
+      },
+      {
+        "word": "liars",
+        "translation": "说谎者；骗子",
+        "exampleEn": "They're <em>liars</em>.",
+        "exampleZh": "他们是骗子。"
+      },
+      {
+        "word": "make a deal",
+        "translation": "达成协议；做交易",
+        "exampleEn": "We <em>make a deal</em> and then...",
+        "exampleZh": "我们达成协议，然后……"
+      },
+      {
+        "word": "press",
+        "translation": "媒体；新闻界",
+        "exampleEn": "They go outside, talk to the <em>press</em>.",
+        "exampleZh": "他们走到外面，对媒体发言。"
+      },
+      {
+        "word": "cuckoo",
+        "translation": "疯狂的；古怪的（俚语）",
+        "exampleEn": "There's something wrong with them. They're <em>cuckoo</em>.",
+        "exampleZh": "他们有点不对劲，他们疯了。"
+      },
+      {
+        "word": "intimate partner violence",
+        "translation": "亲密伴侣暴力",
+        "exampleEn": "This is an exclusive ABC News Nightline interview with <em>intimate partner violence</em> survivor Kate Sweeney.",
+        "exampleZh": "这是美国广播公司《夜线》节目对亲密伴侣暴力幸存者凯特·斯威尼的独家专访。"
+      },
+      {
+        "word": "survivor",
+        "translation": "幸存者",
+        "exampleEn": "intimate partner violence <em>survivor</em> Kate Sweeney about the high-profile Oklahoma teen assault case.",
+        "exampleZh": "亲密伴侣暴力幸存者凯特·斯威尼谈论备受瞩目的俄克拉荷马州青少年袭击案。"
+      },
+      {
+        "word": "high-profile",
+        "translation": "备受瞩目的，高调的",
+        "exampleEn": "about the <em>high-profile</em> Oklahoma teen assault case, with core details as follows.",
+        "exampleZh": "关于这起备受瞩目的俄克拉荷马州青少年袭击案，核心细节如下。"
+      },
+      {
+        "word": "sexual battery",
+        "translation": "性侵犯（法律术语）",
+        "exampleEn": "Jesse Butler was arrested on 11 counts including <em>sexual battery</em> and crimes by instrumentation.",
+        "exampleZh": "杰西·巴特勒因包括性侵犯和工具性侵犯罪在内的11项罪名被捕。"
+      },
+      {
+        "word": "bodycam",
+        "translation": "执法记录仪",
+        "exampleEn": "his police <em>bodycam</em> arrest footage went viral last year.",
+        "exampleZh": "他被捕时的警方执法记录仪画面去年在网上疯传。"
+      },
+      {
+        "word": "viral",
+        "translation": "病毒式传播的，走红的",
+        "exampleEn": "his police bodycam arrest footage went <em>viral</em> last year.",
+        "exampleZh": "他被捕时的警方执法记录仪画面去年在网上疯传。"
+      },
+      {
+        "word": "dismissed",
+        "translation": "驳回，撤销（案件）",
+        "exampleEn": "The court <em>dismissed</em> Butler's criminal case last week.",
+        "exampleZh": "法院上周撤销了巴特勒的刑事案件。"
+      },
+      {
+        "word": "expungement",
+        "translation": "消除（犯罪记录）",
+        "exampleEn": "his legal team will file for his criminal record <em>expungement</em>.",
+        "exampleZh": "他的法律团队将申请消除他的犯罪记录。"
+      },
+      {
+        "word": "abusive",
+        "translation": "虐待的，暴力的",
+        "exampleEn": "Butler became physically and mentally <em>abusive</em>, repeatedly assaulting Kate.",
+        "exampleZh": "巴特勒开始在身体和精神上虐待凯特，多次对她实施袭击。"
+      },
+      {
+        "word": "manipulation",
+        "translation": "操纵，操控",
+        "exampleEn": "who blamed herself and was manipulated into believing she had no other options.",
+        "exampleZh": "她自责不已，并被操控得相信自己别无选择。"
+      },
+      {
+        "word": "choked",
+        "translation": "使窒息，掐住脖子",
+        "exampleEn": "Butler <em>choked</em> Kate into unconsciousness twice when she refused sexual advances.",
+        "exampleZh": "当凯特拒绝性要求时，巴特勒两次将她掐至昏迷。"
+      },
+      {
+        "word": "unconsciousness",
+        "translation": "无意识，昏迷",
+        "exampleEn": "Butler choked Kate into <em>unconsciousness</em> twice when she refused sexual advances.",
+        "exampleZh": "当凯特拒绝性要求时，巴特勒两次将她掐至昏迷。"
+      },
+      {
+        "word": "strangulation",
+        "translation": "勒颈，窒息",
+        "exampleEn": "stated he wanted to film the <em>strangulation</em>, making her fear he would kill her.",
+        "exampleZh": "他说想拍下勒颈的过程，这让她害怕他会杀了自己。"
+      },
+      {
+        "word": "punitive",
+        "translation": "惩罚性的",
+        "exampleEn": "the complete lack of <em>punitive</em> measures against Butler has left her completely stunned.",
+        "exampleZh": "对巴特勒完全没有任何惩罚措施，这让她感到无比震惊。"
+      },
+      {
+        "word": "stunned",
+        "translation": "震惊的，目瞪口呆的",
+        "exampleEn": "the complete lack of punitive measures against Butler has left her completely <em>stunned</em>.",
+        "exampleZh": "对巴特勒完全没有任何惩罚措施，这让她感到无比震惊。"
+      },
+      {
+        "word": "impersonal",
+        "translation": "冷漠的，没有人情味的",
+        "exampleEn": "Kate chooses to speak publicly to counter the <em>impersonal</em> mainstream media coverage.",
+        "exampleZh": "凯特选择公开发声，以对抗冷漠的主流媒体报道。"
+      },
+      {
+        "word": "counseling",
+        "translation": "心理咨询，辅导",
+        "exampleEn": "who got no jail time but only <em>counseling</em> and community service.",
+        "exampleZh": "他没有入狱，只接受了心理咨询和社区服务。"
+      },
+      {
+        "word": "community service",
+        "translation": "社区服务",
+        "exampleEn": "who got no jail time but only counseling and <em>community service</em>.",
+        "exampleZh": "他没有入狱，只接受了心理咨询和社区服务。"
+      },
+      {
+        "word": "register as a sex offender",
+        "translation": "登记为性犯罪者",
+        "exampleEn": "will not need to <em>register as a sex offender</em> after his case was dismissed.",
+        "exampleZh": "案件被撤销后，他不需要登记为性犯罪者。"
+      },
+      {
+        "word": "lenient sentence",
+        "translation": "宽大的判决",
+        "exampleEn": "as the <em>lenient sentence</em> has sparked widespread public outrage.",
+        "exampleZh": "因为这一宽大判决引发了广泛的公众愤怒。"
+      },
+      {
+        "word": "sparked widespread public outrage",
+        "translation": "引发广泛公愤",
+        "exampleEn": "the lenient sentence has <em>sparked widespread public outrage</em>.",
+        "exampleZh": "这一宽大判决引发了广泛的公众愤怒。"
+      },
+      {
+        "word": "perpetrator",
+        "translation": "施害者，犯罪者",
+        "exampleEn": "teen victim Kate Sweeney and <em>perpetrator</em> Jesse Butler.",
+        "exampleZh": "青少年受害者凯特·斯威尼和施害者杰西·巴特勒。"
+      },
+      {
+        "word": "near-fatal",
+        "translation": "几乎致命的",
+        "exampleEn": "repeated sexual assault, and <em>near-fatal</em> strangulation by Butler during their 2024 high school relationship.",
+        "exampleZh": "在2024年的高中恋情期间，巴特勒对她多次实施性侵犯和几乎致命的勒颈行为。"
+      },
+      {
+        "word": "consented",
+        "translation": "同意，应允",
+        "exampleEn": "Kate confirmed she never <em>consented</em> to those acts.",
+        "exampleZh": "凯特确认她从未同意过那些行为。"
+      },
+      {
+        "word": "flipped my world upside down",
+        "translation": "颠覆了我的世界",
+        "exampleEn": "This has <em>flipped my world upside down</em>. And that's not something you can erase.",
+        "exampleZh": "这件事彻底颠覆了我的世界。而这不是你能抹去的。"
+      },
+      {
+        "word": "erase",
+        "translation": "抹去，消除",
+        "exampleEn": "This has flipped my world upside down. And that's not something you can <em>erase</em>.",
+        "exampleZh": "这件事彻底颠覆了我的世界。而这不是你能抹去的。"
+      },
+      {
+        "word": "personalized",
+        "translation": "个性化的，有人情味的",
+        "exampleEn": "But it's not very <em>personalized</em>, and I want to get out there in the world.",
+        "exampleZh": "但那样的报道缺乏人情味，我想走到公众面前。"
+      }
+    ]
+  },
+  {
+    "name": "每日英语听力生词和词组",
+    "cards": [
+      {
+        "word": "tap into",
+        "translation": "利用，发掘，深入挖掘",
+        "exampleEn": "My name's Jills, and I help women step into their power, <em>tap into</em> their divine feminine, and become their best self, live their best life.",
+        "exampleZh": "我叫Jills，我帮助女性释放她们的力量，发掘她们内在的神圣女性特质，成为最好的自己，过上最好的生活。"
+      },
+      {
+        "word": "divine feminine",
+        "translation": "神圣的女性特质",
+        "exampleEn": "My name's Jills, and I help women step into their power, tap into their <em>divine feminine</em>, and become their best self, live their best life.",
+        "exampleZh": "我叫Jills，我帮助女性释放她们的力量，发掘她们内在的神圣女性特质，成为最好的自己，过上最好的生活。"
+      },
+      {
+        "word": "stand by",
+        "translation": "坚持，支持，信守",
+        "exampleEn": "And I <em>stand by</em> this, is your insecurities.",
+        "exampleZh": "而我坚持这一点，就是你的不安全感。"
+      },
+      {
+        "word": "insecurities",
+        "translation": "不安全感，自卑",
+        "exampleEn": "The 1st thing that I think every woman should keep private. And I stand by this, is your <em>insecurities</em>.",
+        "exampleZh": "我认为每个女人都应该保守的第一件事。而我坚持这一点，就是你的不安全感。"
+      },
+      {
+        "word": "self-conscious about",
+        "translation": "对…感到不安/在意",
+        "exampleEn": "Everyone has things that they are <em>self-conscious about</em> or feel like they're not good at or wish something about them would change.",
+        "exampleZh": "每个人都有让自己感到不安的事情，或者觉得自己做不好的地方，或者希望自己能改变某些方面。"
+      },
+      {
+        "word": "identity",
+        "translation": "身份，认同感",
+        "exampleEn": "You have unconsciously, given them instructions on what to associate with you and your <em>identity</em>, right?",
+        "exampleZh": "你在不知不觉中，已经给他们发出了信号，让他们将你和你所认同的身份联系在一起，对吧？"
+      },
+      {
+        "word": "crooked",
+        "translation": "歪斜的，不整齐的",
+        "exampleEn": "Like, if you're insecure that you think you have a big forehead or you're insecure that your teeth are <em>crooked</em> or you have a weird smile.",
+        "exampleZh": "比如，如果你因为觉得自己额头太大而不自信，或者因为牙齿不整齐而自卑，或者觉得自己笑容很奇怪。"
+      },
+      {
+        "word": "better off",
+        "translation": "处境更好，更幸福",
+        "exampleEn": "And we are always <em>better off</em>. We are more likely to be successful and just happier and better off.",
+        "exampleZh": "而且我们的处境总会更好。我们更有可能获得成功，也更快乐、更幸福。"
+      },
+      {
+        "word": "worse off",
+        "translation": "处境更糟",
+        "exampleEn": "You are making them associate you with that label, which they've probably never done before, which just makes you <em>worse off</em>.",
+        "exampleZh": "你是在让他们把你和那个标签联系起来，而他们以前可能从来没有这样想过，这只会让你的处境更糟。"
+      },
+      {
+        "word": "solidify",
+        "translation": "巩固，使固化",
+        "exampleEn": "And the more you repeat those insecurities to yourself or to others over and over again, the more you <em>solidify</em> that into your identity.",
+        "exampleZh": "你越是反复向自己或他人提及那些不安全感，就越会将其固化为你的身份认同。"
+      },
+      {
+        "word": "terrible with",
+        "translation": "很不擅长（某事）",
+        "exampleEn": "So if every week I'm saying, I'm so <em>terrible with</em> money.",
+        "exampleZh": "所以如果我每周都在说，我太不擅长理财了。"
+      },
+      {
+        "word": "sabotaging",
+        "translation": "暗中破坏，自我毁灭",
+        "exampleEn": "I'm always <em>sabotaging</em> my relationships.",
+        "exampleZh": "我总是破坏自己的人际关系。"
+      },
+      {
+        "word": "be discerning about",
+        "translation": "对…审慎选择/有辨别力",
+        "exampleEn": "So <em>be discerning about</em> which stories you choose to share out loud.",
+        "exampleZh": "所以要谨慎选择你愿意大声分享出去的故事。"
+      },
+      {
+        "word": "resurfacing",
+        "translation": "重新浮现，再次出现",
+        "exampleEn": "Old insecurities that keep <em>resurfacing</em> or trying to move past mental blocks.",
+        "exampleZh": "旧的不安全感不断浮现，或者试图克服过去的心理障碍。"
+      },
+      {
+        "word": "past mental blocks",
+        "translation": "克服心理障碍",
+        "exampleEn": "Old insecurities that keep resurfacing or trying to move <em>past mental blocks</em>.",
+        "exampleZh": "旧的不安全感不断浮现，或者试图克服过去的心理障碍。"
+      },
+      {
+        "word": "in your corner",
+        "translation": "支持你，站在你这边",
+        "exampleEn": "Having someone <em>in your corner</em> can make a huge difference.",
+        "exampleZh": "有一个支持你的人会带来巨大的改变。"
+      },
+      {
+        "word": "outside perspective",
+        "translation": "外部视角，旁观者角度",
+        "exampleEn": "And sometimes just having an <em>outside perspective</em> can help you get out of your own head and see things in a new life.",
+        "exampleZh": "有时候，仅仅是一个外部的视角就能帮助你走出自己的思维定式，以全新的方式看待事物。"
+      },
+      {
+        "word": "commuting",
+        "translation": "通勤，上下班路程",
+        "exampleEn": "No waiting rooms, no <em>commuting</em>, just professional support from home on your own schedule.",
+        "exampleZh": "没有候诊室，不用通勤，只需按照自己的时间安排在家即可获得专业支持。"
+      },
+      {
+        "word": "nuptial",
+        "translation": "婚姻的，婚礼的",
+        "exampleEn": "Or maybe you're just in your <em>nuptial</em> phase. And so you're getting angry about the littlest things and you want to vent every single time to your friend.",
+        "exampleZh": "又或者你只是处在新婚阶段。所以你会因为最小的事情生气，每次都想向朋友倾诉。"
+      },
+      {
+        "word": "pick up the slack",
+        "translation": "接手别人的工作，补上不足",
+        "exampleEn": "You're not talking about that time when he really picked up the slack when you needed it.",
+        "exampleZh": "你不会去谈论他真正在你需要时挺身而出的那些时刻。"
+      },
+      {
+        "word": "hiccups",
+        "translation": "小挫折，小问题",
+        "exampleEn": "Like everyone has some <em>hiccups</em> or makes mistakes or has weird moments here and there.",
+        "exampleZh": "就像每个人都会有些小波折，犯些错误，或者时不时有些奇怪的时刻。"
+      },
+      {
+        "word": "caveat",
+        "translation": "注意事项，附带条件",
+        "exampleEn": "But I have a very important <em>caveat</em> here that you need to hear.",
+        "exampleZh": "但我这里有一个非常重要的注意事项，你需要听一听。"
+      },
+      {
+        "word": "discernment",
+        "translation": "辨别力，判断力",
+        "exampleEn": "Okay, so most of the time, having privacy and <em>discernment</em> around your finances is a very good thing and is usually the move.",
+        "exampleZh": "好的，所以在大多数时候，对你的财务状况保持隐私和审慎态度是非常好的做法，通常也是正确的选择。"
+      },
+      {
+        "word": "portfolio",
+        "translation": "投资组合，资产组合",
+        "exampleEn": "Like, you don't need to share how much money you're making when you meet a new friend or about your investment <em>portfolio</em> or how many revenue streams you have.",
+        "exampleZh": "比如，你不需要在结交新朋友时透露自己赚多少钱，也不需要分享你的投资组合或者有多少收入来源。"
+      },
+      {
+        "word": "lowball",
+        "translation": "故意压低（报价/估价）",
+        "exampleEn": "Comparing real financial numbers with a woman who you know knows what they're talking about so you don't get <em>lowball</em>ed.",
+        "exampleZh": "和一个你确信懂行的女性比较真实的财务数据，这样你就不会被压低报价。"
+      },
+      {
+        "word": "mastermind",
+        "translation": "智囊团，策划小组",
+        "exampleEn": "For example, I just joined this women's only business <em>mastermind</em> thing this year, and I've never done anything like that.",
+        "exampleZh": "例如，我今年刚加入了一个仅限女性的商业智囊团，我以前从来没有做过类似的事情。"
+      },
+      {
+        "word": "I wasn't born yesterday",
+        "translation": "我又不是三岁小孩 / 我不是那么好骗的",
+        "exampleEn": "<em>I wasn't born yesterday</em> — I know he's lying about the price.",
+        "exampleZh": "我又不是三岁小孩——我知道他在价格上撒谎。"
+      },
+      {
+        "word": "naive",
+        "translation": "天真的；幼稚的",
+        "exampleEn": "She's too <em>naive</em> to realize that he's just using her.",
+        "exampleZh": "她太天真了，没意识到他只是在利用她。"
+      },
+      {
+        "word": "gullible",
+        "translation": "容易上当的；轻信的",
+        "exampleEn": "Don't be so <em>gullible</em> — that online deal is clearly a scam.",
+        "exampleZh": "别那么"
+      }
+    ]
+  }
+];
+// __FOLDERS_DATA_END__
+
+var currentFolder = null;
+var cards = [];
+var queue = [];
+var currentIndex = 0;
+var state = 'show_word';
+var total = 0;
+
+// Folder selection
+function selectFolder(idx) {
+  currentFolder = idx;
+  cards = folders[idx].cards;
+  total = cards.length;
+  
+  // Update start screen
+  document.getElementById('folder-title').textContent = '📖 ' + folders[idx].name;
+  document.getElementById('total-count').textContent = total;
+  document.getElementById('finished-count').textContent = total;
+  
+  // Switch to start screen
+  document.getElementById('folder-screen').style.display = 'none';
+  document.getElementById('start-screen').style.display = 'block';
+}
+
+function goToFolderScreen() {
+  // Stop any ongoing speech
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('end-screen').style.display = 'none';
+  document.getElementById('folder-screen').style.display = 'block';
+  // Refresh folder counts when returning to folder screen
+  updateFolderCounts();
+}
+
+// ---- Upload Functions ----
+var pendingUploadFolder = null;
+
+function triggerUpload(folderIdx) {
+  pendingUploadFolder = folderIdx;
+  document.getElementById('upload-input').value = '';
+  document.getElementById('upload-input').click();
+}
+
+function handleUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+
+  var folderIdx = pendingUploadFolder;
+  if (folderIdx === null) return;
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, { type: 'array' });
+      var sheet = workbook.Sheets[workbook.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+      if (rows.length < 2) {
+        alert('Excel 文件为空或格式不正确，请至少包含一行数据。');
+        return;
+      }
+
+      // Try to identify columns from header row (check longer patterns first!)
+      // Handles duplicate headers: first "中文翻译" = word translation, second = example Chinese
+      var header = rows[0];
+      var colMap = { word: -1, translation: -1, exampleEn: -1, exampleZh: -1 };
+
+      for (var i = 0; i < header.length; i++) {
+        var h = String(header[i]).toLowerCase().trim();
+        if (h === 'word' || h === '英文' || h === '单词' || h === '词组') {
+          colMap.word = i;
+        } else if (h === '英文例句' || h === '例句' || h === 'exampleen' || h === 'example') {
+          if (colMap.exampleEn === -1) colMap.exampleEn = i;
+        } else if (h === '中文翻译' || h === '中文释义') {
+          // Could be word translation or example Chinese - disambiguate by checking previous column
+          if (colMap.exampleEn !== -1) {
+            // English example already found → this is the Chinese example translation
+            colMap.exampleZh = i;
+          } else if (colMap.exampleZh !== -1) {
+            // Already have exampleZh → this must be word translation
+            colMap.translation = i;
+          } else {
+            // No example yet → assume this is word translation
+            colMap.translation = i;
+          }
+        } else if (h === '中文例句' || h === 'examplezh') {
+          colMap.exampleZh = i;
+        } else if (h === 'translation' || h === '中文' || h === '翻译') {
+          colMap.translation = i;
+        }
+      }
+
+      // Fallback: if header not recognized, try to detect by position
+      if (colMap.word === -1) {
+        colMap.word = 0;
+        colMap.translation = (header.length >= 2) ? 1 : -1;
+        colMap.exampleEn = (header.length >= 3) ? 2 : -1;
+        colMap.exampleZh = (header.length >= 4) ? 3 : -1;
+      }
+
+      var added = 0;
+      for (var r = 1; r < rows.length; r++) {
+        var row = rows[r];
+        var word = row[colMap.word];
+        if (!word || String(word).trim() === '') continue;
+
+        var exampleEn = row[colMap.exampleEn];
+        var exampleZh = row[colMap.exampleZh];
+
+        // If exampleEn contains em tags, keep as-is; otherwise wrap keyword in em
+        var exampleHtml = exampleEn ? String(exampleEn) : '';
+        if (exampleHtml && exampleHtml.indexOf('<em>') === -1) {
+          var wordStr = String(word).trim();
+          var regex = new RegExp(wordStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+          exampleHtml = exampleHtml.replace(regex, '<em>' + wordStr + '</em>');
+        }
+
+        folders[folderIdx].cards.push({
+          word: String(word).trim(),
+          translation: row[colMap.translation] ? String(row[colMap.translation]).trim() : '',
+          exampleEn: exampleHtml,
+          exampleZh: exampleZh ? String(exampleZh).trim() : ''
+        });
+        added++;
+      }
+
+      if (added > 0) {
+        updateFolderCounts();
+        saveToStorage();
+        alert('✅ 成功添加 ' + added + ' 个词组到「' + folders[folderIdx].name + '」！');
+      } else {
+        alert('⚠️ 未找到有效词组数据，请检查 Excel 格式。');
+      }
+    } catch (err) {
+      alert('解析文件失败：' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function updateFolderCounts() {
+  for (var i = 0; i < folders.length; i++) {
+    var el = document.getElementById('folder-count-' + i);
+    if (el) {
+      el.textContent = folders[i].cards.length + ' 个词组';
+    }
+  }
+}
+
+// ---- LocalStorage Persistence ----
+function saveToStorage() {
+  try {
+    var saveData = folders.map(function(f) { return { name: f.name, cards: f.cards }; });
+    localStorage.setItem('flashcard_folders', JSON.stringify(saveData));
+  } catch(e) {
+    console.error('Save to localStorage failed:', e);
+  }
+}
+
+function loadFromStorage() {
+  try {
+    var saved = localStorage.getItem('flashcard_folders');
+    if (saved) {
+      var data = JSON.parse(saved);
+      if (data && data.length === folders.length) {
+        var totalAdded = 0;
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].cards && data[i].cards.length > folders[i].cards.length) {
+            folders[i].cards = data[i].cards;
+            totalAdded += data[i].cards.length - folders[i].cards.length;
+          }
+        }
+        updateFolderCounts();
+        if (totalAdded > 0) {
+          console.log('从本地存储恢复了 ' + totalAdded + ' 个词组');
+        }
+      }
+    }
+  } catch(e) {
+    console.error('Load from localStorage failed:', e);
+  }
+}
+
+function saveOriginalState() {
+  try {
+    if (!localStorage.getItem('flashcard_original')) {
+      var orig = folders.map(function(f) { return { name: f.name, cards: f.cards.map(function(c) { return { word: c.word, translation: c.translation, exampleEn: c.exampleEn, exampleZh: c.exampleZh }; }) }; });
+      localStorage.setItem('flashcard_original', JSON.stringify(orig));
+    }
+  } catch(e) { console.error('Save original state failed:', e); }
+}
+
+function deleteCurrentCard() {
+  if (cards.length === 0) return;
+  var card = queue[currentIndex];
+  if (!confirm('确定删除「' + card.word + '」吗？')) return;
+  
+  // Remove from the folder's cards array
+  var folderCards = folders[currentFolder].cards;
+  for (var i = 0; i < folderCards.length; i++) {
+    if (folderCards[i].word === card.word && folderCards[i].translation === card.translation) {
+      folderCards.splice(i, 1);
+      break;
+    }
+  }
+  
+  // Remove from queue
+  queue.splice(currentIndex, 1);
+  total = queue.length;
+  
+  if (total === 0) {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('end-screen').style.display = 'block';
+    document.getElementById('finished-count').textContent = '0';
+  } else if (currentIndex >= total) {
+    currentIndex = total - 1;
+    displayWord();
+  } else {
+    displayWord();
+  }
+  
+  saveToStorage();
+  updateFolderCounts();
+}
+
+function resetFolder(idx) {
+  if (!confirm('确定要重置「' + folders[idx].name + '」吗？\n所有上传添加的词组将被删除，此操作不可撤销。')) return;
+  
+  try {
+    var orig = JSON.parse(localStorage.getItem('flashcard_original'));
+    if (orig && orig[idx]) {
+      folders[idx].cards = orig[idx].cards.map(function(c) {
+        return { word: c.word, translation: c.translation, exampleEn: c.exampleEn, exampleZh: c.exampleZh };
+      });
+      saveToStorage();
+      updateFolderCounts();
+      alert('✅「' + folders[idx].name + '」已重置，恢复到 ' + folders[idx].cards.length + ' 个词组');
+    } else {
+      alert('未找到原始数据，无法重置');
+    }
+  } catch(e) {
+    alert('重置失败: ' + e.message);
+  }
+}
+
+// ---- GitHub Sync ----
+function openSettings() {
+  document.getElementById('settings-overlay').style.display = 'flex';
+  var savedPat = localStorage.getItem('flashcard_github_pat') || '';
+  document.getElementById('github-pat-input').value = savedPat;
+}
+
+function closeSettings() {
+  document.getElementById('settings-overlay').style.display = 'none';
+}
+
+function syncToGitHub() {
+  var pat = document.getElementById('github-pat-input').value.trim();
+  if (!pat) {
+    alert('请输入 GitHub Personal Access Token');
+    return;
+  }
+
+  localStorage.setItem('flashcard_github_pat', pat);
+  var btn = document.getElementById('sync-btn');
+  btn.textContent = '同步中...';
+  btn.disabled = true;
+
+  // Step 1: Get current file SHA from GitHub
+  fetch('https://api.github.com/repos/NHA6810/vocab-flashcard/contents/index.html', {
+    headers: { 'Authorization': 'token ' + pat }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(fileData) {
+    if (!fileData.sha) {
+      throw new Error('无法读取 GitHub 文件: ' + (fileData.message || '未知错误'));
+    }
+    var sha = fileData.sha;
+
+    // Step 2: Fetch current file content
+    return fetch('https://raw.githubusercontent.com/NHA6810/vocab-flashcard/main/index.html?t=' + Date.now())
+      .then(function(r) {
+        if (!r.ok) {
+          throw new Error('获取文件失败 (HTTP ' + r.status + ')，请稍后再试');
+        }
+        return r.text();
+      })
+      .then(function(html) {
+        // Safety check: verify we got actual HTML, not an error page
+        if (html.indexOf('__FOLDERS_DATA_START__') === -1) {
+          throw new Error('获取的文件内容异常，未找到数据标记，请刷新页面后重试');
+        }
+        return { sha: sha, html: html };
+      });
+  })
+  .then(function(result) {
+    var sha = result.sha;
+    var html = result.html;
+
+    // Step 3: Replace folders data in HTML
+    var foldersJSON = JSON.stringify(folders, null, 2);
+    var newHTML = html.replace(
+      /\/\/\s*__FOLDERS_DATA_START__\s*[\s\S]*?\/\/\s*__FOLDERS_DATA_END__/,
+      '// __FOLDERS_DATA_START__\nvar folders = ' + foldersJSON + ';\n// __FOLDERS_DATA_END__'
+    );
+    
+    // Safety check: verify replacement was successful
+    if (newHTML === html) {
+      throw new Error('数据替换失败，HTML模板可能被损坏');
+    }
+    if (newHTML.length < 1000) {
+      throw new Error('生成的文件异常（太小），已阻止提交');
+    }
+
+    // Step 4: Encode and push to GitHub
+    var encoded = btoa(unescape(encodeURIComponent(newHTML)));
+
+    return fetch('https://api.github.com/repos/NHA6810/vocab-flashcard/contents/index.html', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + pat,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Sync flashcard data via browser upload',
+        content: encoded,
+        sha: sha
+      })
+    });
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    btn.textContent = '✅ 同步成功';
+    btn.disabled = false;
+    setTimeout(function() { btn.textContent = '🔄 同步到 GitHub'; }, 3000);
+    if (!result.sha && result.message) {
+      alert('同步失败: ' + result.message);
+    }
+  })
+  .catch(function(err) {
+    btn.textContent = '🔄 同步到 GitHub';
+    btn.disabled = false;
+    alert('同步失败: ' + err.message);
+  });
+}
+
+// Load from storage on page load
+document.addEventListener('DOMContentLoaded', function() {
+  saveOriginalState();
+  loadFromStorage();
+});
+
+// 语音朗读函数
+function speakEnglish(text, speedArray, onComplete) {
+  if (!('speechSynthesis' in window)) {
+    console.log('浏览器不支持语音合成');
+    if (onComplete) onComplete();
+    return;
+  }
+  
+  window.speechSynthesis.cancel();
+  
+  var cleanText = text.replace(/<[^>]*>/g, '');
+  
+  var totalTimes = speedArray.length;
+  var spokenCount = 0;
+  
+  function speakOnce() {
+    if (spokenCount >= totalTimes) {
+      if (onComplete) onComplete();
+      return;
+    }
+    
+    var currentSpeed = speedArray[spokenCount];
+    var utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'en-US';
+    utterance.rate = currentSpeed;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    utterance.onend = function() {
+      spokenCount++;
+      console.log('朗读了第 ' + spokenCount + ' 遍，速度: ' + currentSpeed);
+      if (spokenCount < totalTimes) {
+        setTimeout(speakOnce, 600);
+      } else {
+        if (onComplete) onComplete();
+      }
+    };
+    
+    utterance.onerror = function(event) {
+      console.error('朗读错误:', event);
+      if (onComplete) onComplete();
+    };
+    
+    window.speechSynthesis.speak(utterance);
+  }
+  
+  speakOnce();
+}
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function startQuiz() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('end-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  queue = shuffle(cards);
+  currentIndex = 0;
+  state = 'show_word';
+  displayWord();
+}
+
+function restartQuiz() {
+  startQuiz();
+}
+
+function displayWord() {
+  if (currentIndex >= total) {
+    window.speechSynthesis.cancel();
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('end-screen').style.display = 'block';
+    return;
+  }
+  
+  state = 'show_word';
+  var card = queue[currentIndex];
+  
+  document.getElementById('word-text').textContent = card.word;
+  document.getElementById('translation').textContent = card.translation;
+  document.getElementById('example-en').innerHTML = card.exampleEn;
+  document.getElementById('example-zh').textContent = card.exampleZh;
+  document.getElementById('example-section').classList.remove('show');
+  document.getElementById('counter').textContent = (currentIndex + 1) + ' / ' + total;
+  document.getElementById('progress-fill').style.width = ((currentIndex) / total * 100) + '%';
+  updateHint();
+  
+  var wordCard = document.getElementById('word-card');
+  wordCard.style.animation = 'none';
+  wordCard.offsetHeight;
+  wordCard.style.animation = 'fadeIn .35s ease';
+  
+  // 更新前进后退按钮状态
+  var prevBtn = document.getElementById('prev-btn');
+  var nextBtn = document.getElementById('next-btn');
+  if (prevBtn) prevBtn.disabled = (currentIndex === 0);
+  if (nextBtn) nextBtn.disabled = (currentIndex >= total - 1);
+}
+
+function updateHint() {
+  var hint = document.getElementById('hint');
+  if (state === 'show_word') {
+    hint.innerHTML = '🔊 按 <kbd>空格</kbd> 或点击屏幕朗读单词';
+  } else if (state === 'read_word') {
+    hint.innerHTML = '🔊 正在朗读...';
+  } else if (state === 'show_example') {
+    hint.innerHTML = '📖 按 <kbd>空格</kbd> 或点击屏幕朗读例句';
+  } else if (state === 'read_example') {
+    hint.innerHTML = '🔊 正在朗读例句...';
+  }
+}
+
+function showExampleSection() {
+  document.getElementById('example-section').classList.add('show');
+  state = 'show_example';
+  updateHint();
+}
+
+function goToNextWord() {
+  currentIndex++;
+  displayWord();
+}
+
+// 后退到上一个单词
+function goBack() {
+  if (currentIndex > 0) {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    currentIndex--;
+    displayWord();
+  }
+}
+
+// 前进到下一个单词（跳过当前）
+function skipForward() {
+  if (currentIndex < total - 1) {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    currentIndex++;
+    displayWord();
+  }
+}
+
+function jumpToWord() {
+  var input = document.getElementById('jump-input');
+  var num = parseInt(input.value);
+  
+  if (isNaN(num) || num < 1 || num > total) {
+    alert('请输入 1 到 ' + total + ' 之间的数字');
+    input.value = '';
+    return;
+  }
+  
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  
+  currentIndex = num - 1;
+  state = 'show_word';
+  displayWord();
+  
+  input.value = '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var jumpInput = document.getElementById('jump-input');
+  if (jumpInput) {
+    jumpInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        jumpToWord();
+      }
+    });
+    
+    jumpInput.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  }
+});
+
+function handleUserAction() {
+  var quizScreen = document.getElementById('quiz-screen');
+  if (quizScreen.style.display !== 'block') {
+    return;
+  }
+  
+  console.log('用户操作，当前状态:', state);
+  
+  if (state === 'show_word') {
+    state = 'read_word';
+    updateHint();
+    var word = queue[currentIndex].word;
+    speakEnglish(word, [1.0, 1.0], function() {
+      showExampleSection();
+    });
+    
+  } else if (state === 'show_example') {
+    state = 'read_example';
+    updateHint();
+    var exampleText = queue[currentIndex].exampleEn;
+    speakEnglish(exampleText, [0.75, 1.0], function() {
+      setTimeout(function() {
+        goToNextWord();
+      }, 800);
+    });
+    
+  } else if (state === 'read_word' || state === 'read_example') {
+    console.log('正在朗读，忽略操作');
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.code === 'Space' || e.key === ' ') {
+    e.preventDefault();
+    handleUserAction();
+  }
+});
+
+document.addEventListener('click', function(e) {
+  if (e.target.tagName === 'BUTTON') {
+    return;
+  }
+  // Don't trigger on folder cards, inputs, or other interactive elements
+  if (e.target.closest('.folder-card') || e.target.closest('.jump-section') || e.target.closest('.back-btn') || e.target.closest('#folder-btn') || e.target.closest('.nav-arrow') || e.target.closest('.upload-btn') || e.target.closest('.settings-icon-btn') || e.target.closest('#settings-overlay') || e.target.closest('.delete-card-btn')) {
+    return;
+  }
+  handleUserAction();
+});
+
+</script>
+
+<!-- Settings Overlay -->
+<div id="settings-overlay">
+  <div class="settings-panel">
+    <h3>⚙️ 设置</h3>
+    <div class="settings-section">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="github-pat-input" placeholder="ghp_xxxx..." class="settings-input">
+      <button id="sync-btn" class="sync-btn" onclick="syncToGitHub()">🔄 同步到 GitHub</button>
+      <p class="settings-hint">上传词组后点击同步，数据将永久保存到 GitHub 仓库。<br>PAT 仅保存在本地浏览器，不会发送到除 GitHub 以外的地方。</p>
+    </div>
+    <div class="settings-section">
+      <label>重置文件夹（删除所有上传的词组）</label>
+      <button class="reset-btn" onclick="resetFolder(0)">🗑️ 重置「YouTube 生字和词组」</button>
+      <button class="reset-btn" onclick="resetFolder(1)">🗑️ 重置「每日英语听力生词和词组」</button>
+      <p class="settings-hint">重置将删除所有通过上传添加的词组，恢复到初始状态。此操作不可撤销。</p>
+    </div>
+    <button class="settings-close-btn" onclick="closeSettings()">关闭</button>
+  </div>
+</div>
+
+</body>
+</html>
